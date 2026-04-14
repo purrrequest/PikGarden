@@ -1,11 +1,11 @@
 # 🌸 PikGarden
 
-<img src="images/screenshot1.png" width="400">&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/screenshot2.png" width="400">
-
-
 A fan-made tracker for [Pikmin Bloom](https://pikminbloom.com/) decor Pikmin.
 
 **[→ Open PikGarden](https://purrrequest.github.io/PikGarden/)**
+
+<img src="images/screenshot1.png" width="400">&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/screenshot2.png" width="400">
+
 
 ---
 
