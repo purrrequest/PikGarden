@@ -18,10 +18,8 @@ A fan-made tracker for [Pikmin Bloom](https://pikminbloom.com/) decor Pikmin.
 
 ## About
 
-Built as a personal project by a Pikmin Bloom fan. No login, no server — everything is saved locally in your browser.
+Built as a personal project by a Pikmin Bloom fan. 
+No login, no server — everything is saved locally in your browser.
 
-Illustrations by [nawmin](https://nawmin.stores.jp).
-
----
 
 *Not affiliated with Niantic or Nintendo.*
