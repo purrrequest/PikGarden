@@ -1,8 +1,9 @@
 # 🌸 PikGarden
 
-<table>
+<table border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td><img src="images/screenshot1.png" width="400"></td>
+    <td width="20"></td>
     <td><img src="images/screenshot2.png" width="400"></td>
   </tr>
 </table>
