@@ -13,15 +13,17 @@
   .header { padding: 16px 20px 12px; border-bottom: 1px solid rgba(0,0,0,0.07); background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 10; }
   .header-inner { max-width: 1200px; margin: 0 auto; }
   .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
-  .share-btn { font-size:12px; font-weight:500; color:#6a7d66; background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.09); border-radius:8px; padding:5px 10px; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; white-space:nowrap; }
+  .share-btn { font-size:12px; font-weight:500; color:#5a6e57; background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.09); border-radius:8px; padding:5px 10px; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; white-space:nowrap; }
   .share-btn:hover { background:#fff; color:#2d5a1b; }
   #import-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); backdrop-filter:blur(4px); z-index:200; align-items:center; justify-content:center; padding:20px; }
   #import-modal.open { display:flex; }
   .import-card { background:#fff; border-radius:16px; padding:24px; width:100%; max-width:420px; box-shadow:0 8px 40px rgba(0,0,0,0.18); }
   .import-card h3 { font-size:16px; font-weight:600; color:#333; margin:0 0 8px; }
   .import-card p { font-size:13px; color:#888; margin:0 0 14px; line-height:1.5; }
-  .import-card textarea { width:100%; box-sizing:border-box; height:80px; border:1px solid #ddd; border-radius:10px; padding:10px 12px; font-size:13px; font-family:'Inter',sans-serif; resize:none; outline:none; color:#444; }
-  .import-card textarea:focus { border-color:#4a9e30; }
+  .import-file-label { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; box-sizing:border-box; height:80px; border:1.5px dashed #c0d8b4; border-radius:10px; font-size:13px; font-family:'Inter',sans-serif; color:#5a6e57; cursor:pointer; transition:border-color 0.15s, background 0.15s; background:rgba(255,255,255,0.5); }
+  .import-file-label:hover { border-color:#4a9e30; background:#f4fbf0; }
+  .import-file-label.has-file { border-color:#4a9e30; background:#f0f7ea; color:#2d5a1b; }
+  #import-input { display:none; }
   .import-actions { display:flex; gap:8px; margin-top:12px; }
   .import-actions button { flex:1; padding:10px; border-radius:10px; font-family:'Inter',sans-serif; font-size:14px; font-weight:500; cursor:pointer; border:none; transition:background 0.15s; }
   .import-confirm { background:#4a9e30; color:#fff; }
@@ -40,7 +42,7 @@
   .loc-row { display: flex; align-items: center; gap: 8px; }
   .loc-input-wrap { flex: 1; min-width: 0; position: relative; }
   .loc-input-wrap input { width: 100%; border: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 14px; color: #555555; outline: none; padding: 0 28px 0 0; }
-  .loc-input-wrap input::placeholder { color: #94a88e; }
+  .loc-input-wrap input::placeholder { color: #7a8c77; }
   .field-icon { position: absolute; right: 0; top: 50%; transform: translateY(-50%); pointer-events: none; }
   .loc-btn { font-size: 14px; color: #fff; background: #4a9e30; border: none; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; white-space: nowrap; flex-shrink: 0; transition: background 0.15s; }
   .loc-btn:hover { background: #3d8a27; }
@@ -56,7 +58,7 @@
   .toggle-btn.active { background: rgba(255,255,255,0.85); color: #2d5a1b; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
   .search-bar { background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; padding: 10px 14px; margin-bottom: 16px; position: relative; box-shadow: 0 4px 20px rgba(45,90,27,0.07); }
   .search-bar input { width: 100%; border: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 14px; color: #555555; outline: none; padding-right: 28px; }
-  .search-bar input::placeholder { color: #94a88e; }
+  .search-bar input::placeholder { color: #7a8c77; }
   .mobile-view { display: block; }
   .desktop-view { display: none; }
   .decor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -65,21 +67,21 @@
   .decor-card.collected-card { opacity: 0.45; }
   .decor-icon { font-size: 24px; margin-bottom: 6px; display: block; line-height: 1; }
   .decor-name { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 500; color: #444444; margin-bottom: 5px; }
-  .decor-wear { font-size: 11px; color: #6a7d66; }
+  .decor-wear { font-size: 11px; color: #5a6e57; }
   .card-distance { font-size: 11px; color: #7a6a10; font-weight: 500; background: #f5e89a; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 8px; }
   .detail-panel { background: rgba(255,255,255,1); border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 20px 20px 40px 20px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(45,90,27,0.07); }
   .detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
   .detail-icon { font-size: 36px; }
   .detail-name { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 600; color: #444444; margin-bottom: 6px; }
-  .detail-subtitle { font-size: 14px; color: #6a7d66; }
-  .section-label { font-size: 11px; font-weight: 500; color: #6a7d66; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .detail-subtitle { font-size: 14px; color: #5a6e57; }
+  .section-label { font-size: 11px; font-weight: 500; color: #5a6e57; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
   .location-list { list-style: none; margin-bottom: 20px; }
   .location-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddeedd; gap: 8px; }
   .location-item:last-child { border-bottom: none; }
   .loc-info { flex: 1; min-width: 0; }
   .loc-name { color: #555555; font-weight: 500; font-size: 14px; }
   .loc-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
-  .loc-type { color: #6a7d66; font-size: 11px; }
+  .loc-type { color: #5a6e57; font-size: 11px; }
   .loc-distance-badge { font-size: 11px; color: #7a6a10; font-weight: 500; background: #f5e89a; padding: 1px 6px; border-radius: 4px; }
   .maps-btn { font-size: 13px; color: #fff; background: #4a9e30; border: none; border-radius: 8px; padding: 8px 10px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; white-space: nowrap; flex-shrink: 0; transition: background 0.15s; }
   .maps-btn:hover { background: #3d8a27; }
@@ -92,7 +94,7 @@
   .empty-state { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
   .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
   .empty-state-title { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: #555555; margin-bottom: 8px; }
-  .empty-state-text { font-size: 14px; color: #6a7d66; line-height: 1.6; margin-bottom: 16px; }
+  .empty-state-text { font-size: 14px; color: #5a6e57; line-height: 1.6; margin-bottom: 16px; }
   .empty-state-btn { font-size: 14px; color: #fff; background: #2d5a1b; border: none; border-radius: 10px; padding: 9px 18px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; transition: background 0.15s; }
   .empty-state-btn:hover { background: #3d7a26; }
   .checklist-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; margin-bottom: 6px; cursor: pointer; }
@@ -104,8 +106,8 @@
   .checklist-item.collected .checklist-name { color: #2d5a1b; text-decoration: line-through; opacity: 0.7; }
   .progress-bar-wrap { background: #d4e8c8; border-radius: 99px; height: 6px; margin-bottom: 20px; overflow: hidden; }
   .progress-bar-fill { height: 100%; background: #2d5a1b; border-radius: 99px; transition: width 0.3s; }
-  .progress-label { font-size: 12px; color: #6a7d66; margin-bottom: 6px; }
-  .distance-note { font-size: 11px; color: #94a88e; margin-bottom: 16px; }
+  .progress-label { font-size: 12px; color: #5a6e57; margin-bottom: 6px; }
+  .distance-note { font-size: 11px; color: #7a8c77; margin-bottom: 16px; }
   .accordion-item { background:rgba(255,255,255,0.7); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,0.7); border-radius:12px; margin-bottom:6px; overflow:hidden; box-shadow:0 4px 16px rgba(45,90,27,0.07); }
   .accordion-header { display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; user-select:none; }
   .accordion-header:hover { background:rgba(255,255,255,0.3); }
@@ -126,7 +128,7 @@
   .card-highlight { animation: cardHighlight 1.8s cubic-bezier(0.22,1,0.36,1) both; }
   .variant-row { margin-bottom:24px; }
   .variant-row:last-child { margin-bottom:0; }
-  .variant-label { font-size:11px; font-weight:500; color:#6a7d66; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+  .variant-label { font-size:11px; font-weight:500; color:#5a6e57; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
   .color-grid { display:flex; gap:12px; flex-wrap:wrap; }
   .color-cell { width:30px; height:30px; border-radius:50%; border:none; background:transparent; padding:0; cursor:pointer; transition:transform 0.1s; flex-shrink:0; overflow:hidden; }
   .color-cell img { width:100%; height:100%; display:block; pointer-events:none; opacity:0.7; }
@@ -134,13 +136,22 @@
   .color-cell:hover { transform:scale(1.1); }
   .sub-tabs { display:flex; gap:40px; justify-content:center; margin-bottom:20px; border-bottom:1px solid #b8d0ac; padding-bottom:0; }
   .finder-filter-tabs { display:none; }
-  .sub-tab { font-size:14px; font-weight:500; color:#94a88e; background:none; border:none; border-bottom:2px solid transparent; padding:6px 0 8px; margin-bottom:-1px; cursor:pointer; font-family:'Inter',sans-serif; transition:color 0.15s,border-color 0.15s; }
+  .sub-tab { font-size:14px; font-weight:500; color:#7a8c77; background:none; border:none; border-bottom:2px solid transparent; padding:6px 0 8px; margin-bottom:-1px; cursor:pointer; font-family:'Inter',sans-serif; transition:color 0.15s,border-color 0.15s; }
   .sub-tab.active { color:#2d5a1b; border-bottom-color:#2d5a1b; }
   .sub-tab:hover:not(.active) { color:#5a6e57; }
-  .event-category-label { font-size:13px; font-weight:600; color:#6a7d66; text-transform:uppercase; letter-spacing:0.8px; margin:24px 0 8px; }
+  .event-category-label { font-size:13px; font-weight:600; color:#5a6e57; text-transform:uppercase; letter-spacing:0.8px; margin:24px 0 8px; }
+  .tape-wrap { position:relative; margin-top:10px; margin-bottom:30px; height:54px; overflow:visible; }
+  #collection[data-tab="roadside"] .tape-wrap,
+  #collection[data-tab="events"] .tape-wrap { margin-top:60px; }
+  .tape-strip { position:absolute; left:-60px; right:-60px; height:28px; pointer-events:none; }
+  .nav-hint { font-size:15px; color:#7a8c77; padding:40px 4px; margin:0; }
+  .nav-hint span { text-decoration:underline; text-underline-offset:3px; }
+  .nav-hint:hover span { color:#4e7a4a; }
+  .text-link { text-decoration:underline; text-underline-offset:3px; transition:opacity 0.15s; }
+  .text-link:hover { opacity:0.65; }
   .rare-row-locked { opacity:0.3; pointer-events:none; }
   .letter-grid { margin-top:30px; padding-top:30px; border-top:1px solid #edf2eb; }
-  .letter-grid-header { font-size:11px; font-weight:500; color:#6a7d66; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+  .letter-grid-header { font-size:11px; font-weight:500; color:#5a6e57; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
   .letter-row { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
   .letter-label { font-size:12px; font-weight:700; color:#555555; width:14px; flex-shrink:0; font-family:'Inter',sans-serif; }
   .rare-badge { font-size:11px; background:#f2eafa; color:#826ab1; border-radius:4px; padding:1px 5px; margin-left:4px; font-weight:500; letter-spacing:0.3px; vertical-align:middle; }
@@ -184,12 +195,12 @@
     .desktop-card-icon { font-size: 22px; flex-shrink: 0; }
     .desktop-card-info { flex: 1; min-width: 0; }
     .desktop-card-name { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 500; color: #444444; }
-    .desktop-card-wear { font-size: 11px; color: #6a7d66; }
+    .desktop-card-wear { font-size: 11px; color: #5a6e57; }
     .desktop-card-distance { font-size: 11px; color: #7a6a10; font-weight: 500; background: #f5e89a; padding: 2px 7px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
     .welcome-panel { background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; padding: 40px 32px; text-align: center; box-shadow: 0 4px 20px rgba(45,90,27,0.07); }
     .welcome-placeholder { width: 120px; height: 120px; background: #f0f7ea; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 52px; }
     .welcome-title { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 600; color: #2d5a1b; margin-bottom: 8px; }
-    .welcome-text { font-size: 14px; color: #6a7d66; line-height: 1.6; }
+    .welcome-text { font-size: 14px; color: #5a6e57; line-height: 1.6; }
     .desktop-detail { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(45,90,27,0.07); }
     .collection-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
     .collection-cell { background: #fff; border: 1px solid #c0d8b4; border-radius: 12px; padding: 14px 10px; text-align: center; cursor: pointer; transition: all 0.15s; position: relative; }
@@ -203,6 +214,7 @@
     .collection-accordion-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; align-items:stretch; }
     .collection-accordion-grid .accordion-item { margin-bottom:0; }
     .collection-accordion-grid .event-category-label { grid-column: 1 / -1; }
+    .collection-accordion-grid .nav-hint { grid-column: 1 / -1; }
     .header { padding: 16px 24px 12px; }
     .main { padding: 24px; }
   }
@@ -268,22 +280,30 @@
     <div id="collection" class="tab-section">
       <div class="mobile-view" id="mobile-collection"></div>
       <div class="desktop-view" id="desktop-collection"></div>
-      <div style="margin-top:20px;padding:20px 0;text-align:center;">
-        <a href="#" onclick="exportCollection();return false;" style="font-size:13px;color:#6a7d66;text-decoration:underline;text-underline-offset:3px;font-family:'Inter',sans-serif;">Export collection</a>
-        <span style="margin:0 16px;"></span>
-        <a href="#" onclick="openImportModal();return false;" style="font-size:13px;color:#6a7d66;text-decoration:underline;text-underline-offset:3px;font-family:'Inter',sans-serif;">Import collection</a>
+      <div class="tape-wrap">
+        <div class="tape-strip" style="background:rgba(68,185,210,0.38);top:6px;transform:rotate(-0.7deg);"></div>
+        <div class="tape-strip" style="background:rgba(108,202,120,0.40);top:18px;transform:rotate(0.5deg);"></div>
+      </div>
+      <div style="padding:20px 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <span style="font-size:14px;color:#7a8c77;">Switching devices?</span>
+        <span style="font-size:14px;color:#7a8c77;">Export your collection, then import it on your new device.</span>
+        <span style="margin-top:6px;">
+          <a href="#" onclick="exportCollection();return false;" class="text-link" style="font-size:14px;color:#5a6e57;font-family:'Inter',sans-serif;">Export collection</a>
+          <span style="margin:0 16px;"></span>
+          <a href="#" onclick="openImportModal();return false;" class="text-link" style="font-size:14px;color:#5a6e57;font-family:'Inter',sans-serif;">Import collection</a>
+        </span>
       </div>
     </div>
   </div>
 </div>
 <div style="padding:0 20px;margin:0;display:flex;align-items:flex-end;justify-content:space-between;">
-  <img src="images/butterfly.avif" alt="" aria-hidden="true" style="width:55px;height:55px;object-fit:contain;display:block;align-self:flex-start;margin-top:-8px;margin-left:50px;">
+  <img src="images/butterfly.avif" alt="" aria-hidden="true" style="width:55px;height:55px;object-fit:contain;display:block;align-self:flex-start;margin-top:-28px;margin-left:50px;">
   <img src="images/goose.avif" alt="" aria-hidden="true" style="width:140px;height:140px;object-fit:contain;display:block;margin-bottom:-8px;">
 </div>
-<footer style="border-top:1px solid rgba(0,0,0,0.07);padding:40px 20px 120px;text-align:center;">
-  <p style="font-size:13px;font-weight:600;color:#fff;margin:0 0 8px;font-family:'Inter',sans-serif;">Made by a Pikmin Bloom fan with love &nbsp;&nbsp;🌱</p>
-  <p style="font-size:12px;color:#3b7c31;line-height:1.6;margin:10px 0 0;font-family:'Inter',sans-serif;">Found a bug or have a suggestion? <a href="https://github.com/purrrequest/PikGarden/issues" target="_blank" rel="noopener" style="color:#3b7c31;text-decoration:underline;text-underline-offset:2px;">Open an issue on GitHub.</a></p>
-  <p style="font-size:12px;color:#7da377;line-height:1.6;margin:10px 0 0;font-family:'Inter',sans-serif;">This web app is not affiliated with Niantic or Nintendo. Illustration by <a href="https://nawmin.stores.jp" target="_blank" rel="noopener" style="color:#7da377;text-decoration:underline;text-underline-offset:2px;">nawmin</a>.</p>
+<footer style="border-top:1px solid rgba(0,0,0,0.07);padding:40px 20px 50px;text-align:center;">
+  <p style="font-size:16px;font-weight:600;color:#fff;margin:0 0 8px;font-family:'Inter',sans-serif;">Made by a Pikmin Bloom fan with love &nbsp;&nbsp;🌱</p>
+  <p style="font-size:14px;color:#5a6e57;line-height:1.6;margin:10px 0 0;font-family:'Inter',sans-serif;">Found a bug or have a suggestion? <a href="https://github.com/purrrequest/PikGarden/issues" target="_blank" rel="noopener" class="text-link" style="color:#5a6e57;">Open an issue on GitHub.</a></p>
+  <p style="font-size:14px;color:#7a8c77;line-height:1.6;margin:30px 0 0;font-family:'Inter',sans-serif;">This web app is not affiliated with Niantic or Nintendo.<br>Illustration by <a href="https://nawmin.stores.jp" target="_blank" rel="noopener" class="text-link" style="color:#7a8c77;">nawmin</a>.</p>
 </footer>
 
 <script>
@@ -593,7 +613,7 @@ function setManualLocation(){
   const val=document.getElementById('locationInput').value.trim();
   if(!val)return;
   const input=document.getElementById('locationInput');
-  input.readOnly=true;input.style.color='#94a88e';
+  input.readOnly=true;input.style.color='#7a8c77';
   startWave('Looking up location…');
   fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&format=json&limit=1&addressdetails=1`)
     .then(r=>r.json())
@@ -657,7 +677,7 @@ function startListSpinner(spinnerId,label){
   const frames=['◐','◓','◑','◒'];let i=0;
   function tick(){
     const el=document.getElementById(spinnerId);
-    if(el){el.innerHTML=frames[i%4]+' '+label+' <span style="font-size:12px;font-weight:400;color:#94a88e;">This may take 10–30 seconds 🌿</span>';i++;}
+    if(el){el.innerHTML=frames[i%4]+' '+label+' <span style="font-size:12px;font-weight:400;color:#7a8c77;">This may take 10–30 seconds 🌿</span>';i++;}
   }
   tick();
   listSpinnerTimer=setInterval(tick,120);
@@ -669,14 +689,14 @@ const noLocsErr=(listId,decorId)=>`<li style="list-style:none;padding:16px 0 20p
   <p style="font-size:15px;color:#c4905a;margin:0 0 14px;">The search dried up. 🥀</p>
   <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
     <button class="retry-btn" onclick="retryOverpassLoad('${listId}','${decorId}')"><span class="retry-btn-icon">↺</span> Try again</button>
-    <span style="font-size:15px;color:#6a7d66;">— the little ones will search harder! 🌱</span>
+    <span style="font-size:15px;color:#5a6e57;">— the little ones will search harder! 🌱</span>
   </div>
 </li>`;
 function retryOverpassLoad(listId,decorId){
   const decor=findDecor(decorId);
   const el=document.getElementById(listId);
   if(!decor||!el||!userCoords)return;
-  el.innerHTML=`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby… <span style="font-size:12px;font-weight:400;color:#94a88e;">This may take 10–30 seconds 🌿</span></li>`;
+  el.innerHTML=`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby… <span style="font-size:12px;font-weight:400;color:#7a8c77;">This may take 10–30 seconds 🌿</span></li>`;
   loadOverpassIntoList(listId,decor);
 }
 const retryLabels=['Trying once more…','One last try…'];
@@ -709,7 +729,7 @@ async function loadOverpassIntoList(listId,decor){
     stopListSpinner();
   }
   if(locs){
-    el.innerHTML=locs.length===0?`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/wind.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#94a88e;margin:0 0 10px;">Nothing nearby.</p><p style="font-size:11px;color:#94a88e;line-height:1.6;margin:0;">Try moving to a different area or <a href="#" onclick="useMyLocation();return false;" style="color:#94a88e;text-decoration:underline;text-underline-offset:2px;">updating your location</a>.</p></li>`:getSortedLocations(locs).map(renderLocItem).join('');
+    el.innerHTML=locs.length===0?`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/wind.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#7a8c77;margin:0 0 10px;">Nothing nearby.</p><p style="font-size:11px;color:#7a8c77;line-height:1.6;margin:0;">Try moving to a different area or <a href="#" onclick="useMyLocation();return false;" style="color:#7a8c77;text-decoration:underline;text-underline-offset:2px;">updating your location</a>.</p></li>`:getSortedLocations(locs).map(renderLocItem).join('');
     renderMobileGrid();renderDesktopList();
   }else{
     el.innerHTML=noLocsErr(listId,decor.id);
@@ -856,9 +876,9 @@ function renderDetailContent(containerId,id){
   const initialLocs=cachedData&&cachedData.length>0?getSortedLocations(cachedData):d.skipOverpass?getSortedLocations(d.locations):[];
   const exclusiveHtml=`<li style="font-size:14px;color:#888;padding:16px 0;list-style:none;">Only available in ${d.exclusive} — location search not applicable.</li>`;
   const noteHtml=d.note?`<li style="font-size:14px;color:#888;padding:16px 0;list-style:none;">${d.note}</li>`:null;
-  const noLocationHtml=`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/tree-trunk.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#94a88e;margin:0 0 10px;">No location set yet.</p><p style="font-size:11px;color:#94a88e;line-height:1.6;margin:0;">Tap <a href="#" onclick="useMyLocation();return false;" style="color:#94a88e;text-decoration:underline;text-underline-offset:2px;">Use My Location</a> at the top to find spots near you.</p></li>`;
-  const nothingNearbyHtml=`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/wind.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#94a88e;margin:0 0 10px;">Nothing nearby.</p><p style="font-size:11px;color:#94a88e;line-height:1.6;margin:0;">Try moving to a different area or <a href="#" onclick="useMyLocation();return false;" style="color:#94a88e;text-decoration:underline;text-underline-offset:2px;">updating your location</a>.</p></li>`;
-  const loadingHtml=useOverpass&&!cached?`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby… <span style="font-size:12px;font-weight:400;color:#94a88e;">This may take 10–30 seconds 🌿</span></li>`:cached&&cachedData.length===0?nothingNearbyHtml:initialLocs.map(renderLocItem).join('');
+  const noLocationHtml=`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/tree-trunk.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#7a8c77;margin:0 0 10px;">No location set yet.</p><p style="font-size:11px;color:#7a8c77;line-height:1.6;margin:0;">Tap <a href="#" onclick="useMyLocation();return false;" style="color:#7a8c77;text-decoration:underline;text-underline-offset:2px;">Use My Location</a> at the top to find spots near you.</p></li>`;
+  const nothingNearbyHtml=`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/wind.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#7a8c77;margin:0 0 10px;">Nothing nearby.</p><p style="font-size:11px;color:#7a8c77;line-height:1.6;margin:0;">Try moving to a different area or <a href="#" onclick="useMyLocation();return false;" style="color:#7a8c77;text-decoration:underline;text-underline-offset:2px;">updating your location</a>.</p></li>`;
+  const loadingHtml=useOverpass&&!cached?`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby… <span style="font-size:12px;font-weight:400;color:#7a8c77;">This may take 10–30 seconds 🌿</span></li>`:cached&&cachedData.length===0?nothingNearbyHtml:initialLocs.map(renderLocItem).join('');
   const locsHtml=noteHtml?noteHtml:isExclusive?exclusiveHtml:(!userCoords&&!d.skipOverpass)?noLocationHtml:loadingHtml;
   document.getElementById(containerId).innerHTML=`
     <div class="detail-header"><span class="detail-icon">${d.icon}</span><div><div class="detail-name">${d.name} Pikmin</div><div class="detail-subtitle">Wears: ${d.wear}${progressNote}</div></div></div>
@@ -884,7 +904,9 @@ function goToCollection(id){
 function openMaps(name,lat,lng){window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&center=${lat},${lng}`,'_blank','noopener,noreferrer');}
 
 // ─── COLLECTION TRACKER ──────────────────────────────────────────────────────
-function setCollectionTab(tab){collectionTab=tab;localStorage.setItem('pikgarden-subtab',tab);renderCollection();}
+function setCollectionTab(tab){collectionTab=tab;localStorage.setItem('pikgarden-subtab',tab);renderCollection();window.scrollTo({top:0});}
+function updateCollectionTabAttr(){const el=document.getElementById('collection');if(el)el.dataset.tab=collectionTab;}
+
 function collectionSubTabs(){
   return`<div class="sub-tabs">`+
     ['regular','roadside','events'].map(t=>`<button class="sub-tab${collectionTab===t?' active':''}" onclick="setCollectionTab('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')+
@@ -902,10 +924,19 @@ function collectionContent(){
       eventDecors.filter(d=>d.category===cat).map(d=>renderAccordionItem(d)).join('')
     ).join('');
   }
-  // regular — all decors except roadside
-  return decors.filter(d=>d.category!=='roadside').map(d=>renderAccordionItem(d)).join('');
+  // regular — all decors except roadside, with nav hints inserted
+  const roadsideHint=`<div class="nav-hint" onclick="setCollectionTab('roadside')" style="cursor:pointer;">🪙 Roadside Pikmin &rarr; <span>see the Roadside tab</span></div>`;
+  const eventsHint=`<div class="nav-hint" onclick="setCollectionTab('events')" style="cursor:pointer;">🥳 Events Pikmin &rarr; <span>see the Events tab</span></div>`;
+  const filtered=decors.filter(d=>d.category!=='roadside');
+  const parts=[];
+  filtered.forEach(d=>{
+    parts.push(renderAccordionItem(d));
+    if(d.id==='library') parts.push(roadsideHint);
+    if(d.id==='koreanrestaurant') parts.push(eventsHint);
+  });
+  return parts.join('');
 }
-function renderCollection(){renderMobileCollection();renderDesktopCollection();}
+function renderCollection(){updateCollectionTabAttr();renderMobileCollection();renderDesktopCollection();}
 window.addEventListener('resize',()=>renderCollection());
 function renderMobileCollection(){
   document.getElementById('mobile-collection').innerHTML=collectionSubTabs()+collectionContent();
@@ -1061,34 +1092,51 @@ function showToast(msg){
   toastHideTimer=setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(16px)';},2500);
 }
 function exportCollection(){
-  const code=btoa(JSON.stringify([...collected]));
-  navigator.clipboard.writeText(code).then(()=>{
-    showToast('Collection code copied!');
-  }).catch(()=>{
-    prompt('Copy this code:',code);
-  });
+  const data=JSON.stringify([...collected],null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='pikgarden-collection.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Collection downloaded!');
 }
 function openImportModal(){
-  document.getElementById('import-input').value='';
+  const input=document.getElementById('import-input');
+  const label=document.getElementById('import-file-label');
+  input.value='';
+  label.textContent='📂 Choose a .json file';
+  label.classList.remove('has-file');
   document.getElementById('import-modal').classList.add('open');
 }
 function closeImportModal(){
   document.getElementById('import-modal').classList.remove('open');
 }
-function confirmImport(){
-  const code=document.getElementById('import-input').value.trim();
-  if(!code)return;
-  try{
-    const data=JSON.parse(atob(code));
-    if(!Array.isArray(data))throw new Error();
-    collected=new Set(data);
-    saveCollected();
-    closeImportModal();
-    renderAll();renderCollection();
-    showToast(`Imported ${data.length} collected items.`);
-  }catch(e){
-    alert('Invalid code — please check and try again.');
+function onImportFileChange(input){
+  const label=document.getElementById('import-file-label');
+  if(input.files&&input.files[0]){
+    label.textContent='✅ '+input.files[0].name;
+    label.classList.add('has-file');
   }
+}
+function confirmImport(){
+  const input=document.getElementById('import-input');
+  if(!input.files||!input.files[0]){alert('Please choose a file first.');return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!Array.isArray(data))throw new Error();
+      collected=new Set(data);
+      saveCollected();
+      closeImportModal();
+      renderAll();renderCollection();
+      showToast(`Imported ${data.length} collected Pikmin!`);
+    }catch(err){
+      alert('Invalid file — please use a file exported from PikGarden.');
+    }
+  };
+  reader.readAsText(input.files[0]);
 }
 
 (()=>{
@@ -1104,8 +1152,9 @@ window.addEventListener('scroll',()=>{
 <div id="import-modal" onclick="if(event.target===this)closeImportModal()">
   <div class="import-card">
     <h3>Import Collection</h3>
-    <p>Paste your export code below to load a collection from another device.</p>
-    <textarea id="import-input" placeholder="Paste code here…"></textarea>
+    <p>Choose the <strong>pikgarden-collection.json</strong> file you exported earlier.</p>
+    <label id="import-file-label" class="import-file-label" for="import-input">📂 Choose a .json file</label>
+    <input type="file" id="import-input" accept=".json" onchange="onImportFileChange(this)">
     <div class="import-actions">
       <button class="import-cancel" onclick="closeImportModal()">Cancel</button>
       <button class="import-confirm" onclick="confirmImport()">Import</button>
