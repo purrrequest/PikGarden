@@ -1,7 +1,7 @@
 # 🌸 PikGarden
 
-![screenshot](screenshot1.png)
-![screenshot](screenshot2.png)
+![screenshot](images/screenshot1.png)
+![screenshot](images/screenshot2.png)
 
 A fan-made tracker for [Pikmin Bloom](https://pikminbloom.com/) decor Pikmin.
 
