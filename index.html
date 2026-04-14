@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pikgarden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rubik:wght@700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: #c9e1bf; background-image: radial-gradient(ellipse at 25% 15%, #d6eccc 0%, transparent 55%), radial-gradient(ellipse at 78% 82%, #b2d19f 0%, transparent 55%); min-height: 100vh; color: #555555; }
+  .app { max-width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
+  .header { padding: 16px 20px 12px; border-bottom: 1px solid rgba(0,0,0,0.07); background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 10; }
+  .header-inner { max-width: 1200px; margin: 0 auto; }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .share-btn { font-size:12px; font-weight:500; color:#6a7d66; background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.09); border-radius:8px; padding:5px 10px; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; white-space:nowrap; }
+  .share-btn:hover { background:#fff; color:#2d5a1b; }
+  #import-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); backdrop-filter:blur(4px); z-index:200; align-items:center; justify-content:center; padding:20px; }
+  #import-modal.open { display:flex; }
+  .import-card { background:#fff; border-radius:16px; padding:24px; width:100%; max-width:420px; box-shadow:0 8px 40px rgba(0,0,0,0.18); }
+  .import-card h3 { font-size:16px; font-weight:600; color:#333; margin:0 0 8px; }
+  .import-card p { font-size:13px; color:#888; margin:0 0 14px; line-height:1.5; }
+  .import-card textarea { width:100%; box-sizing:border-box; height:80px; border:1px solid #ddd; border-radius:10px; padding:10px 12px; font-size:13px; font-family:'Inter',sans-serif; resize:none; outline:none; color:#444; }
+  .import-card textarea:focus { border-color:#4a9e30; }
+  .import-actions { display:flex; gap:8px; margin-top:12px; }
+  .import-actions button { flex:1; padding:10px; border-radius:10px; font-family:'Inter',sans-serif; font-size:14px; font-weight:500; cursor:pointer; border:none; transition:background 0.15s; }
+  .import-confirm { background:#4a9e30; color:#fff; }
+  .import-confirm:hover { background:#3d8a27; }
+  .import-cancel { background:#f0f0f0; color:#555; }
+  .import-cancel:hover { background:#e4e4e4; }
+  .app-title { font-family: 'Rubik', sans-serif; font-size: 28px; font-weight: 700; color: #3CC455; text-transform: uppercase; display: flex; letter-spacing: 1px; }
+  @keyframes letterJump { 0% { transform: translateY(0); } 5% { transform: translateY(var(--lift,-10px)); } 10% { transform: translateY(0); } 100% { transform: translateY(0); } }
+  .app-title span { display: inline-block; animation: letterJump 6s ease-in-out infinite; }
+  .tabs { display: flex; gap: 4px; background: #e8ede6; border: none; padding: 3px; border-radius: 99px; margin-bottom: 20px; }
+  .tab { flex: 1; padding: 10px 12px 12px; border: none; background: transparent; border-radius: 99px; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 500; color: #7a8c77; cursor: pointer; transition: all 0.15s; white-space: nowrap; display: flex; align-items: center; justify-content: center; }
+  .tab.active { background: #fff; color: #555555; box-shadow: 0 1px 4px rgba(0,0,0,0.13), 0 0.5px 1px rgba(0,0,0,0.08); }
+  .tab.active::before { content: '✿\00a0'; font-size: 1.2em; letter-spacing: 1px; }
+  .main { flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 20px; }
+  .location-bar { background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.7); border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(45,90,27,0.07); }
+  .loc-row { display: flex; align-items: center; gap: 8px; }
+  .loc-input-wrap { flex: 1; min-width: 0; position: relative; }
+  .loc-input-wrap input { width: 100%; border: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 14px; color: #555555; outline: none; padding: 0 28px 0 0; }
+  .loc-input-wrap input::placeholder { color: #94a88e; }
+  .field-icon { position: absolute; right: 0; top: 50%; transform: translateY(-50%); pointer-events: none; }
+  .loc-btn { font-size: 14px; color: #fff; background: #4a9e30; border: none; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; white-space: nowrap; flex-shrink: 0; transition: background 0.15s; }
+  .loc-btn:hover { background: #3d8a27; }
+  @keyframes toastIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes toastOut { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(16px); } }
+  .wave-dot { display:inline-block; line-height:1; transition:transform 0.15s ease, font-size 0.15s ease, color 0.15s ease; }
+  .location-confirm { display:none; align-items:center; gap:8px; background:rgba(255,255,255,0.82); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.75); border-radius:99px; padding:10px 20px; font-size:13px; color:#444444; font-weight:500; box-shadow:0 8px 32px rgba(45,90,27,0.12); white-space:nowrap; width:fit-content; margin-top:-16px; margin-bottom:16px; }
+  .location-confirm.visible { display:flex; animation:toastIn 0.4s cubic-bezier(0.22,1.4,0.36,1) both; }
+  .location-confirm.hiding { animation:toastOut 0.3s ease-in both; }
+  .confirm-dot { width:7px; height:7px; border-radius:50%; background:#3CC455; flex-shrink:0; }
+  .toggle-row { display: flex; gap: 4px; background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.5); padding: 3px; border-radius: 10px; margin-bottom: 16px; }
+  .toggle-btn { flex: 1; padding: 6px 10px; border: none; background: transparent; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; color: #5a6e57; cursor: pointer; transition: all 0.15s; }
+  .toggle-btn.active { background: rgba(255,255,255,0.85); color: #2d5a1b; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .search-bar { background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; padding: 10px 14px; margin-bottom: 16px; position: relative; box-shadow: 0 4px 20px rgba(45,90,27,0.07); }
+  .search-bar input { width: 100%; border: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 14px; color: #555555; outline: none; padding-right: 28px; }
+  .search-bar input::placeholder { color: #94a88e; }
+  .mobile-view { display: block; }
+  .desktop-view { display: none; }
+  .decor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .decor-card { background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.7); border-radius: 14px; padding: 20px 14px; cursor: pointer; transition: all 0.15s; position: relative; box-shadow: 0 4px 16px rgba(45,90,27,0.07); }
+  .decor-card:hover { background: rgba(255,255,255,1); border-color: rgba(255,255,255,1); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(45,90,27,0.12); }
+  .decor-card.collected-card { opacity: 0.45; }
+  .decor-icon { font-size: 24px; margin-bottom: 6px; display: block; line-height: 1; }
+  .decor-name { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 500; color: #444444; margin-bottom: 5px; }
+  .decor-wear { font-size: 11px; color: #6a7d66; }
+  .card-distance { font-size: 11px; color: #7a6a10; font-weight: 500; background: #f5e89a; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 8px; }
+  .detail-panel { background: rgba(255,255,255,1); border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 20px 20px 40px 20px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(45,90,27,0.07); }
+  .detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .detail-icon { font-size: 36px; }
+  .detail-name { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 600; color: #444444; margin-bottom: 6px; }
+  .detail-subtitle { font-size: 14px; color: #6a7d66; }
+  .section-label { font-size: 11px; font-weight: 500; color: #6a7d66; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .location-list { list-style: none; margin-bottom: 20px; }
+  .location-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #ddeedd; gap: 8px; }
+  .location-item:last-child { border-bottom: none; }
+  .loc-info { flex: 1; min-width: 0; }
+  .loc-name { color: #555555; font-weight: 500; font-size: 14px; }
+  .loc-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .loc-type { color: #6a7d66; font-size: 11px; }
+  .loc-distance-badge { font-size: 11px; color: #7a6a10; font-weight: 500; background: #f5e89a; padding: 1px 6px; border-radius: 4px; }
+  .maps-btn { font-size: 13px; color: #fff; background: #4a9e30; border: none; border-radius: 8px; padding: 8px 10px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; white-space: nowrap; flex-shrink: 0; transition: background 0.15s; }
+  .maps-btn:hover { background: #3d8a27; }
+  .back-btn { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #2d5a1b; background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; margin-top: 20px; margin-bottom: 16px; padding: 0; transition: opacity 0.15s; }
+  .back-btn:hover { opacity: 0.7; }
+  .tip-box { background: rgba(230,230,230,0.5); border: none; border-radius: 12px; padding: 12px 14px; font-size: 14px; color: #777777; margin-bottom: 26px; line-height: 1.5; }
+  .tag-pill { font-size: 11px; background: #faf9f7; color: #b0aba4; padding: 4px 8px; border-radius: 6px; font-family: monospace; }
+  .collect-btn { width: 100%; padding: 8px 11px 11px; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; margin-top: 20px; }
+  .collect-btn:hover { background: #eef7ea !important; border-color: transparent !important; }
+  .empty-state { text-align: center; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+  .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state-title { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; color: #555555; margin-bottom: 8px; }
+  .empty-state-text { font-size: 14px; color: #6a7d66; line-height: 1.6; margin-bottom: 16px; }
+  .empty-state-btn { font-size: 14px; color: #fff; background: #2d5a1b; border: none; border-radius: 10px; padding: 9px 18px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; transition: background 0.15s; }
+  .empty-state-btn:hover { background: #3d7a26; }
+  .checklist-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; margin-bottom: 6px; cursor: pointer; }
+  .checklist-item.collected { background: #f0f7ea; border-color: #8ab86e; }
+  .check-circle { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #aac49e; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; }
+  .checklist-item.collected .check-circle { background: #2d5a1b; border-color: #2d5a1b; color: #fff; }
+  .checklist-icon { font-size: 18px; }
+  .checklist-name { font-size: 16px; font-weight: 500; color: #555555; flex: 1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .checklist-item.collected .checklist-name { color: #2d5a1b; text-decoration: line-through; opacity: 0.7; }
+  .progress-bar-wrap { background: #d4e8c8; border-radius: 99px; height: 6px; margin-bottom: 20px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: #2d5a1b; border-radius: 99px; transition: width 0.3s; }
+  .progress-label { font-size: 12px; color: #6a7d66; margin-bottom: 6px; }
+  .distance-note { font-size: 11px; color: #94a88e; margin-bottom: 16px; }
+  .accordion-item { background:rgba(255,255,255,0.7); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,0.7); border-radius:12px; margin-bottom:6px; overflow:hidden; box-shadow:0 4px 16px rgba(45,90,27,0.07); }
+  .accordion-header { display:flex; align-items:center; gap:10px; padding:11px 14px; cursor:pointer; user-select:none; }
+  .accordion-header:hover { background:rgba(255,255,255,0.3); }
+  .accordion-item.full .accordion-header { border-color:rgba(138,184,110,0.6); }
+  .acc-progress-bar { flex:1; background:#ddeedd; border-radius:99px; height:7px; overflow:hidden; }
+  .acc-progress-bar-fill { height:100%; background:#72DC7A; border-radius:99px; transition:width 0.4s ease; }
+  .acc-arrow { font-size:14px; color:#aac49e; margin-left:12px; transition:transform 0.15s; display:inline-block; flex-shrink:0; }
+  .accordion-item.open .acc-arrow { transform:rotate(180deg); }
+  .accordion-item.open { background:rgba(255,255,255,1); }
+  .accordion-body { display:grid; grid-template-rows:0fr; overflow:hidden; transition:grid-template-rows 0.28s ease-out; }
+  .accordion-body.open { grid-template-rows:1fr; transition:grid-template-rows 0.6s cubic-bezier(0.22,1.4,0.36,1); }
+  .accordion-body.celebrate-close { transition:grid-template-rows 1.4s cubic-bezier(0.4,0,0.2,1) !important; }
+  .accordion-body-inner { min-height:0; }
+  .accordion-body-inner-pad { padding:30px 35px 36px 40px; border-top:1px solid #ddeedd; }
+  .accordion-body.roadside-body .accordion-body-inner-pad { border-top:none; }
+  @keyframes btnEntrance { from { transform:translateY(6px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+  @keyframes cardHighlight { 0% { background:#fff; transform:scale(1); box-shadow:0 4px 16px rgba(0,0,0,0.07); } 30% { background:#fff; transform:scale(1.1); box-shadow:12px 20px 64px rgba(0,0,0,0.5); } 100% { background:#fff; transform:scale(1); box-shadow:0 4px 16px rgba(0,0,0,0.07); } }
+  .card-highlight { animation: cardHighlight 1.8s cubic-bezier(0.22,1,0.36,1) both; }
+  .variant-row { margin-bottom:24px; }
+  .variant-row:last-child { margin-bottom:0; }
+  .variant-label { font-size:11px; font-weight:500; color:#6a7d66; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+  .color-grid { display:flex; gap:12px; flex-wrap:wrap; }
+  .color-cell { width:30px; height:30px; border-radius:50%; border:none; background:transparent; padding:0; cursor:pointer; transition:transform 0.1s; flex-shrink:0; overflow:hidden; }
+  .color-cell img { width:100%; height:100%; display:block; pointer-events:none; opacity:0.7; }
+  .color-cell.collected img { opacity:1; }
+  .color-cell:hover { transform:scale(1.1); }
+  .sub-tabs { display:flex; gap:40px; justify-content:center; margin-bottom:20px; border-bottom:1px solid #b8d0ac; padding-bottom:0; }
+  .finder-filter-tabs { display:none; }
+  .sub-tab { font-size:14px; font-weight:500; color:#94a88e; background:none; border:none; border-bottom:2px solid transparent; padding:6px 0 8px; margin-bottom:-1px; cursor:pointer; font-family:'Inter',sans-serif; transition:color 0.15s,border-color 0.15s; }
+  .sub-tab.active { color:#2d5a1b; border-bottom-color:#2d5a1b; }
+  .sub-tab:hover:not(.active) { color:#5a6e57; }
+  .event-category-label { font-size:13px; font-weight:600; color:#6a7d66; text-transform:uppercase; letter-spacing:0.8px; margin:24px 0 8px; }
+  .rare-row-locked { opacity:0.3; pointer-events:none; }
+  .letter-grid { margin-top:30px; padding-top:30px; border-top:1px solid #edf2eb; }
+  .letter-grid-header { font-size:11px; font-weight:500; color:#6a7d66; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+  .letter-row { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .letter-label { font-size:12px; font-weight:700; color:#555555; width:14px; flex-shrink:0; font-family:'Inter',sans-serif; }
+  .rare-badge { font-size:11px; background:#f2eafa; color:#826ab1; border-radius:4px; padding:1px 5px; margin-left:4px; font-weight:500; letter-spacing:0.3px; vertical-align:middle; }
+  .done-badge { font-size:11px; background:#c8f0d4; color:#1a6e35; border-radius:4px; padding:1px 5px; margin-left:12px; font-weight:500; letter-spacing:0.3px; vertical-align:middle; }
+
+  .retry-btn { display:inline-flex; align-items:center; gap:8px; font-size:15px; color:#fff; background:#d4943a; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; font-family:'Inter',sans-serif; font-weight:500; transition:background 0.15s; }
+  .retry-btn:hover { background:#be7f28; }
+  .retry-btn-icon { font-size:20px; line-height:1; display:inline-block; }
+  #back-to-top { position:fixed; bottom:24px; right:20px; width:46px; height:46px; border-radius:50%; background:rgba(255,255,255,0.65); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,0.6); box-shadow:0 4px 20px rgba(0,0,0,0.14); color:#4a9e30; cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity 0.25s, transform 0.25s; transform:translateY(8px); z-index:100; }
+  #back-to-top.visible { opacity:1; pointer-events:auto; transform:translateY(0); }
+  #back-to-top:hover { background:rgba(255,255,255,0.85); }
+
+  /* Accessibility: focus-visible states */
+  .search-bar:focus-within { box-shadow: 0 4px 20px rgba(45,90,27,0.07), 0 0 0 2px rgba(74,158,48,0.3); }
+  .loc-input-container:focus-within { outline: 2px solid rgba(74,158,48,0.35); outline-offset: 1px; border-radius: 12px; }
+  .color-cell:focus-visible { outline: 2px solid #4a9e30; outline-offset: 2px; }
+  /* Semantic button resets for card and accordion elements */
+  button.decor-card { display: block; width: 100%; text-align: left; font-family: inherit; color: inherit; }
+  button.decor-card-desktop { width: 100%; text-align: left; font-family: inherit; color: inherit; }
+  button.accordion-header { width: 100%; text-align: left; font-family: inherit; color: inherit; border: none; background: none; }
+  button.decor-card:focus-visible, button.decor-card-desktop:focus-visible { outline: 2px solid rgba(74,158,48,0.4); outline-offset: -2px; }
+  button.accordion-header:focus-visible { outline: 2px solid rgba(74,158,48,0.4); outline-offset: -2px; }
+
+  @media (min-width: 640px) {
+    #back-to-top { display:none; }
+    .main { min-width: 760px; }
+    .finder-filter-tabs { display: flex; }
+    .accordion-header { cursor: default !important; pointer-events: none; }
+    .acc-arrow { display: none; }
+    .mobile-view { display: none; }
+    .desktop-view { display: flex; gap: 24px; align-items: flex-start; }
+    #desktop-collection { display: block; }
+    .desktop-left { width: 320px; flex-shrink: 0; }
+    .desktop-right { flex: 1; min-width: 0; position: sticky; top: 100px; }
+    .decor-grid-desktop { display: flex; flex-direction: column; gap: 10px; }
+    .decor-card-desktop { background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; padding: 10px 14px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 12px rgba(45,90,27,0.06); }
+    .decor-card-desktop:hover { background: rgba(255,255,255,1); }
+    .decor-card-desktop.selected { background: rgba(255,255,255,1); }
+    .decor-grid-desktop.has-selection .decor-card-desktop:not(.selected) { opacity: 0.6; }
+    .decor-card-desktop.collected-card { opacity: 0.4; }
+    .desktop-card-icon { font-size: 22px; flex-shrink: 0; }
+    .desktop-card-info { flex: 1; min-width: 0; }
+    .desktop-card-name { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 500; color: #444444; }
+    .desktop-card-wear { font-size: 11px; color: #6a7d66; }
+    .desktop-card-distance { font-size: 11px; color: #7a6a10; font-weight: 500; background: #f5e89a; padding: 2px 7px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+    .welcome-panel { background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; padding: 40px 32px; text-align: center; box-shadow: 0 4px 20px rgba(45,90,27,0.07); }
+    .welcome-placeholder { width: 120px; height: 120px; background: #f0f7ea; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 52px; }
+    .welcome-title { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 600; color: #2d5a1b; margin-bottom: 8px; }
+    .welcome-text { font-size: 14px; color: #6a7d66; line-height: 1.6; }
+    .desktop-detail { background: #fff; border: 1px solid rgba(0,0,0,0.07); border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(45,90,27,0.07); }
+    .collection-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .collection-cell { background: #fff; border: 1px solid #c0d8b4; border-radius: 12px; padding: 14px 10px; text-align: center; cursor: pointer; transition: all 0.15s; position: relative; }
+    .collection-cell:hover { border-color: #8ab86e; }
+    .collection-cell.collected { background: #f0f7ea; border-color: #8ab86e; }
+    .collection-cell-icon { font-size: 28px; margin-bottom: 6px; display: block; }
+    .collection-cell-name { font-size: 11px; font-weight: 500; color: #555555; }
+    .collection-cell.collected .collection-cell-name { color: #2d5a1b; }
+    .cell-check { position: absolute; top: 6px; right: 6px; width: 16px; height: 16px; border-radius: 50%; background: #2d5a1b; color: #fff; font-size: 9px; display: none; align-items: center; justify-content: center; }
+    .collection-cell.collected .cell-check { display: flex; }
+    .collection-accordion-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; align-items:stretch; }
+    .collection-accordion-grid .accordion-item { margin-bottom:0; }
+    .collection-accordion-grid .event-category-label { grid-column: 1 / -1; }
+    .header { padding: 16px 24px 12px; }
+    .main { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-top">
+        <a onclick="showTab('collection',document.querySelectorAll('.tab')[0]);window.scrollTo({top:0,behavior:'smooth'});" href="#" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+          <img src="images/App Icon.png" width="40" height="40" style="border-radius:9px;display:block;" alt="Pikgarden">
+          <span class="app-title"><span style="animation-delay:0s;--lift:-8px">P</span><span style="animation-delay:0.15s;--lift:-13px">I</span><span style="animation-delay:0.3s;--lift:-7px">K</span><span style="animation-delay:0.45s;--lift:-14px">G</span><span style="animation-delay:0.6s;--lift:-9px">A</span><span style="animation-delay:0.75s;--lift:-12px">R</span><span style="animation-delay:0.9s;--lift:-6px">D</span><span style="animation-delay:1.05s;--lift:-11px">E</span><span style="animation-delay:1.2s;--lift:-10px">N</span></span>
+        </a>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('collection',this)">Garden Tracker</button>
+        <button class="tab" onclick="showTab('finder',this)">Decor Finder</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div id="finder" class="tab-section" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px;margin-top:10px;">
+        <button class="loc-btn" style="height:38px;padding:0 18px;border-radius:12px;flex-shrink:0;" onclick="useMyLocation()">Use My Location</button>
+        <div class="loc-input-container" style="flex:1;height:38px;display:flex;align-items:center;background:rgba(255,255,255,0.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.7);border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(45,90,27,0.07);padding:0 14px;position:relative;">
+          <input style="width:100%;border:none;background:transparent;font-family:'Inter',sans-serif;font-size:14px;color:#555555;outline:none;padding-right:28px;" type="text" id="locationInput" placeholder="Or enter a city to see distances" onkeydown="if(event.key==='Enter') setManualLocation()" onclick="onLocationInputFocus()">
+          <button id="locationClear" onclick="clearLocation()" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aac49e;font-size:18px;padding:0;width:20px;height:20px;line-height:20px;text-align:center;">×</button>
+          <svg id="locationSearchIcon" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;" width="15" height="15" viewBox="0 0 16 16" fill="none">
+            <circle cx="7" cy="7" r="4.5" stroke="#aac49e" stroke-width="1.5"/>
+            <path d="M11 11l3 3" stroke="#aac49e" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="sub-tabs finder-filter-tabs">
+        <button class="sub-tab active" onclick="setFilter('all',this)">All Decor</button>
+        <button class="sub-tab" onclick="setFilter('missing',this)">Missing Only</button>
+      </div>
+      <div class="search-bar" style="display:none">
+        <input type="text" placeholder="Search decor type..." id="searchInput" oninput="renderAll()">
+        <svg class="field-icon" width="15" height="15" viewBox="0 0 16 16" fill="none" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;">
+          <circle cx="7" cy="7" r="4.5" stroke="#aac49e" stroke-width="1.5"/>
+          <path d="M11 11l3 3" stroke="#aac49e" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="mobile-view">
+        <div id="mobile-finder-home"><div id="mobile-decor-grid"></div></div>
+        <div id="mobile-finder-detail" style="display:none;">
+          <button class="back-btn" onclick="mobileShowHome()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L3 7l6 5" stroke="#2d5a1b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            All Decor
+          </button>
+          <div class="detail-panel" id="mobile-detail-content"></div>
+        </div>
+      </div>
+      <div class="desktop-view">
+        <div class="desktop-left"><div class="decor-grid-desktop" id="desktop-decor-list"></div></div>
+        <div class="desktop-right"><div id="desktop-panel"></div></div>
+      </div>
+    </div>
+
+    <div id="collection" class="tab-section">
+      <div class="mobile-view" id="mobile-collection"></div>
+      <div class="desktop-view" id="desktop-collection"></div>
+      <div style="margin-top:20px;padding:20px 0;text-align:center;">
+        <a href="#" onclick="exportCollection();return false;" style="font-size:13px;color:#6a7d66;text-decoration:underline;text-underline-offset:3px;font-family:'Inter',sans-serif;">Export collection</a>
+        <span style="margin:0 16px;"></span>
+        <a href="#" onclick="openImportModal();return false;" style="font-size:13px;color:#6a7d66;text-decoration:underline;text-underline-offset:3px;font-family:'Inter',sans-serif;">Import collection</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="padding:0 20px;margin:0;display:flex;align-items:flex-end;justify-content:space-between;">
+  <img src="images/butterfly.avif" alt="" aria-hidden="true" style="width:55px;height:55px;object-fit:contain;display:block;align-self:flex-start;margin-top:-8px;margin-left:50px;">
+  <img src="images/goose.avif" alt="" aria-hidden="true" style="width:140px;height:140px;object-fit:contain;display:block;margin-bottom:-8px;">
+</div>
+<footer style="border-top:1px solid rgba(0,0,0,0.07);padding:40px 20px 120px;text-align:center;">
+  <p style="font-size:13px;font-weight:600;color:#fff;margin:0 0 8px;font-family:'Inter',sans-serif;">Made by a Pikmin Bloom fan with love &nbsp;&nbsp;🌱</p>
+  <p style="font-size:12px;color:#7da377;line-height:1.6;margin:10px 0 0;font-family:'Inter',sans-serif;">This web app is not affiliated with Niantic or Nintendo.</p>
+  <p style="font-size:12px;color:#7da377;margin:6px 0 0;font-family:'Inter',sans-serif;">Illustration by <a href="https://nawmin.stores.jp" target="_blank" rel="noopener" style="color:#7da377;text-decoration:underline;text-underline-offset:2px;">nawmin</a></p>
+</footer>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+// NOTE: Garden Tracker currently tracks per decor type only (simple mode).
+// Next version: upgrade to per variant + per color tracking.
+// Color data per decor is confirmed and ready — see NEXT_STEPS below.
+//
+// CONFIRMED COLOR DATA (to implement in next version):
+// Full 7 (Red,Yellow,Blue,Purple,White,Rock,Winged), no Ice:
+//   restaurant, forest, koreanrestaurant, sweetshop, movietheater, pharmacy,
+//   zoo, postoffice, airport, station, beach, park, burgerplace, cornerstore,
+//   supermarket, bakery, hairsalon, clothesstore, library, sushirestaurant,
+//   mountain, stadium, busstop, italianrestaurant, ramen, bridge, hotel,
+//   makeupstore, shrinestemplest, curryrestaurant, diystore, mexicanrestaurant, laundromat
+// Café: full 7 no Ice
+// Waterside: full 7 no Ice
+// Theme Park: Red, Yellow, Blue only
+// University: Red, Yellow, Blue only
+// Appliances Store: Yellow only
+//
+// NEXT_STEPS:
+// 1. Expand to all 40+ decors in Spot Finder with Bay Area locations
+// 2. Upgrade Garden Tracker to per-variant + per-color tracking
+// 3. Add community-verified location feature
+// 4. Move to Claude Code for further development
+
+const decors = [
+  { id:'restaurant', name:'Restaurant', icon:'🍽️', wear:'Chef hat', rareVariants:['★ Rare'], locations:[{name:'Applebee\'s Fremont',type:'Chain restaurant',lat:37.5485,lng:-121.9886},{name:'Olive Garden Newark',type:'Chain restaurant',lat:37.5295,lng:-122.0402},{name:'Cheesecake Factory',type:'Restaurant',lat:37.5630,lng:-121.9763}], tags:['amenity=restaurant','amenity=fast_food'], tip:'Almost any sit-down restaurant or fast food spot counts. One of the most common decors to find.' },
+  { id:'cafe', name:'Café', icon:'☕', wear:'Coffee cup', rareVariants:['★ Rare'], searchTerms:['cafe','café','coffee'], locations:[{name:'Starbucks Fremont Blvd',type:'Coffee chain',lat:37.5485,lng:-121.9800},{name:'Peet\'s Coffee Fremont',type:'Coffee chain',lat:37.5500,lng:-121.9870},{name:'Blue Bottle Coffee Oakland',type:'Coffee shop',lat:37.8044,lng:-122.2712}], tags:['amenity=cafe'], tip:'Any coffee shop works, as long as it primarily serves coffee. Major chains and independent cafés both count.' },
+  { id:'sweetshop', name:'Sweetshop', icon:'🍬', wear:'Macaron / Donut', locations:[{name:'Nothing Bundt Cakes Fremont',type:'Bakery',lat:37.5532,lng:-121.9887},{name:'See\'s Candies Newpark Mall',type:'Candy store',lat:37.5284,lng:-122.0388},{name:'Local bakery or patisserie',type:'Any bakery',lat:37.5485,lng:-121.9886}], tags:['shop=confectionery','shop=pastry'], tip:'Look for dedicated candy shops, chocolate stores, or pastry boutiques. Regular cafés with pastries don\'t always qualify.' },
+  { id:'pharmacy', name:'Pharmacy', icon:'💊', wear:'Toothbrush', locations:[{name:'CVS Pharmacy Fremont',type:'Pharmacy chain',lat:37.5490,lng:-121.9880},{name:'Walgreens Mission Blvd',type:'Pharmacy chain',lat:37.5477,lng:-121.9798},{name:'Rite Aid Fremont',type:'Pharmacy chain',lat:37.5502,lng:-121.9850}], tags:['amenity=pharmacy'], tip:'Drugstore chains and standalone pharmacies work reliably.' },
+  { id:'forest', name:'Forest', icon:'🌲', wear:'Stag Beetle / Acorn', locations:[{name:'Coyote Hills Regional Park',type:'Regional park, Fremont',lat:37.5579,lng:-122.0641},{name:'Tilden Regional Park',type:'Regional park, Berkeley',lat:37.8966,lng:-122.2417},{name:'Redwood Regional Park',type:'Regional park, Oakland',lat:37.8074,lng:-122.1571}], tags:['landuse=forest','natural=wood'], tip:'Large wooded areas only — small neighborhood parks usually won\'t count. Head to a proper forest or nature reserve.' },
+  { id:'waterside', name:'Waterside', icon:'🎣', wear:'Fishing lure', rareVariants:['★ Rare'], locations:[{name:'Lake Elizabeth',type:'Lake, Fremont',lat:37.5351,lng:-121.9757},{name:'Coyote Creek Trail',type:'Creekside trail',lat:37.5200,lng:-121.9600},{name:'San Francisco Bay Trail',type:'Bay waterfront',lat:37.5580,lng:-122.0600}], tags:['natural=water','waterway=river'], tip:'Walk along any lake, river, or creek. The bigger the body of water, the more reliably it counts.' },
+  { id:'beach', name:'Beach', icon:'🐚', wear:'Shell', locations:[{name:'Crown Memorial State Beach',type:'Beach, Alameda',lat:37.7639,lng:-122.2869},{name:'Crissy Field Beach',type:'Beach, San Francisco',lat:37.8036,lng:-122.4681},{name:'Half Moon Bay State Beach',type:'Beach, Half Moon Bay',lat:37.4635,lng:-122.4385}], tags:['natural=beach'], tip:'Only sandy beaches qualify — rocky shorelines and bay fronts often don\'t. Look for proper named beaches.' },
+  { id:'airport', name:'Airport', icon:'✈️', wear:'Toy airplane', locations:[{name:'Oakland International (OAK)',type:'International airport',lat:37.7213,lng:-122.2208},{name:'San Jose International (SJC)',type:'International airport',lat:37.3639,lng:-121.9289},{name:'San Francisco International (SFO)',type:'International airport',lat:37.6213,lng:-122.3790}], tags:['aeroway=aerodrome'], tip:'Must be inside or right outside a terminal building. Parking lots and nearby roads won\'t count.' },
+  { id:'artgallery', name:'Art Gallery', icon:'🖼️', wear:'Painting frame', locations:[{name:'Oakland Museum of California',type:'Museum, Oakland',lat:37.7985,lng:-122.2650},{name:'SFMOMA',type:'Art museum, San Francisco',lat:37.7857,lng:-122.4011},{name:'de Young Museum',type:'Art museum, San Francisco',lat:37.7714,lng:-122.4685}], tags:['tourism=gallery','tourism=museum'], tip:'Art museums and smaller galleries both work. Any space dedicated to displaying art should qualify.' },
+  { id:'hairsalon', name:'Hair salon', icon:'✂️', wear:'Scissors', rareVariants:['★ Rare'], locations:[{name:'Great Clips Fremont',type:'Hair salon chain',lat:37.5492,lng:-121.9883},{name:'Supercuts Fremont',type:'Hair salon chain',lat:37.5480,lng:-121.9870},{name:'Sport Clips Fremont',type:'Barbershop chain',lat:37.5498,lng:-121.9890}], tags:['shop=hairdresser','shop=beauty'], tip:'One of the easiest to find — almost every neighborhood has one. Any hair salon or barbershop counts.' },
+  { id:'minimart', name:'Corner store', icon:'🏪', wear:'Bottle cap / Snack', locations:[{name:'7-Eleven Fremont Blvd',type:'Convenience store',lat:37.5488,lng:-121.9882},{name:'ampm Fremont',type:'Convenience store',lat:37.5501,lng:-121.9855},{name:'Circle K Newark',type:'Convenience store',lat:37.5295,lng:-122.0400}], tags:['shop=convenience'], tip:'Look for convenience stores and small corner shops. Not every small grocery qualifies.' },
+  { id:'movietheater', name:'Movie theater', icon:'🎬', wear:'Popcorn snack', locations:[{name:'AMC NewPark 12',type:'Cinema, Newark',lat:37.5270,lng:-122.0413},{name:'Regal Hacienda Crossings',type:'Cinema, Dublin',lat:37.7059,lng:-121.9020},{name:'Century 20 Daly City',type:'Cinema, Daly City',lat:37.6879,lng:-122.4702}], tags:['amenity=cinema'], tip:'Must be at the cinema building itself. The parking lot or nearby streets won\'t count.' },
+  { id:'postoffice', name:'Post office', icon:'📮', wear:'Stamp', locations:[{name:'USPS Fremont Main Post Office',type:'Post office',lat:37.5481,lng:-121.9885},{name:'USPS Newark Post Office',type:'Post office',lat:37.5290,lng:-122.0418}], tags:['amenity=post_office'], tip:'Only official government post offices — not private shipping stores or mailboxes.' },
+  { id:'station', name:'Station', icon:'🚆', wear:'Paper train / Ticket / Gold Ticket', locations:[{name:'Fremont BART Station',type:'BART station',lat:37.5573,lng:-121.9761},{name:'Union City BART Station',type:'BART station',lat:37.5913,lng:-122.0175},{name:'Warm Springs BART Station',type:'BART station',lat:37.5021,lng:-121.9396}], tags:['railway=station'], tip:'Train, metro, and subway stations all work. Bus stops are tracked separately as their own decor type.' },
+  { id:'zoo', name:'Zoo', icon:'🦁', wear:'Dandelion', locations:[{name:'Oakland Zoo',type:'Zoo, Oakland',lat:37.7654,lng:-122.1598},{name:'San Francisco Zoo',type:'Zoo, San Francisco',lat:37.7325,lng:-122.5026},{name:'Aquarium of the Bay',type:'Aquarium, San Francisco',lat:37.8085,lng:-122.4101}], tags:['tourism=zoo'], tip:'Zoos and aquariums both count. Wildlife sanctuaries may also work.' },
+  { id:'koreanrestaurant', name:'Korean Restaurant', icon:'🍱', wear:'Kimchi', locations:[{name:'OB Bear Restaurant',type:'Korean restaurant, Oakland',lat:37.8044,lng:-122.2591},{name:'Ohgane Korean BBQ',type:'Korean BBQ, Oakland',lat:37.7985,lng:-122.2140},{name:'Hanul Korean Restaurant',type:'Korean restaurant, Fremont',lat:37.5499,lng:-121.9880}], tags:['cuisine=korean'], tip:'Any Korean restaurant works. Korean BBQ spots are a reliable option.' },
+  { id:'burgerplace', name:'Burger Place', icon:'🍔', wear:'Burger', locations:[{name:'In-N-Out Burger Fremont',type:'Burger chain',lat:37.5502,lng:-121.9852},{name:'Five Guys Newark',type:'Burger chain',lat:37.5273,lng:-122.0420},{name:'Shake Shack Union Square SF',type:'Burger chain, San Francisco',lat:37.7879,lng:-122.4075}], tags:['amenity=fast_food'], tip:'Burger-focused fast food spots. Generic fast food chains that serve many cuisines may not always count.' },
+  { id:'supermarket', name:'Supermarket', icon:'🛒', wear:'Mushroom / Banana', rareVariants:['★ Banana Rare'], locations:[{name:'Safeway Fremont',type:'Supermarket chain',lat:37.5491,lng:-121.9883},{name:'Whole Foods Market Fremont',type:'Supermarket chain',lat:37.5532,lng:-121.9887},{name:'Trader Joe\'s Newark',type:'Supermarket chain',lat:37.5290,lng:-122.0392}], tags:['shop=supermarket'], tip:'Large grocery supermarkets work reliably. Small corner grocers usually don\'t qualify.' },
+  { id:'bakery', name:'Bakery', icon:'🥖', wear:'Baguette', rareVariants:['★ Rare'], locations:[{name:'Boudin Bakery Fremont Hub',type:'Bakery chain',lat:37.5496,lng:-121.9884},{name:'La Farine Bakery Oakland',type:'Bakery, Oakland',lat:37.8123,lng:-122.2155},{name:'Acme Bread Company Berkeley',type:'Artisan bakery',lat:37.8693,lng:-122.2686}], tags:['shop=bakery'], tip:'Dedicated bread or pastry bakeries. Café-bakery combos sometimes count but not always.' },
+  { id:'clothesstore', name:'Clothes Store', icon:'👗', wear:'Hair tie', locations:[{name:'H&M Newpark Mall',type:'Clothing chain, Newark',lat:37.5278,lng:-122.0408},{name:'Zara Stanford Shopping Center',type:'Clothing chain, Palo Alto',lat:37.4436,lng:-122.1708},{name:'Uniqlo Union Square SF',type:'Clothing chain, San Francisco',lat:37.7878,lng:-122.4065}], tags:['shop=clothes'], tip:'Any clothing store works. Large fashion chains are the most reliable.' },
+  { id:'park', name:'Park', icon:'🌿', wear:'Clover / Four-leaf clover', rareVariants:['★ Clover Rare','★ Four-leaf Rare'], locations:[{name:'Central Park Fremont',type:'City park',lat:37.5509,lng:-121.9863},{name:'Lake Merritt',type:'Urban park, Oakland',lat:37.7993,lng:-122.2596},{name:'Dolores Park',type:'City park, San Francisco',lat:37.7596,lng:-122.4269}], tags:['leisure=park'], tip:'Must be a proper named park. Small green strips, plazas, or traffic islands usually don\'t qualify.' },
+  { id:'library', name:'Library', icon:'📚', wear:'Tiny book', locations:[{name:'Fremont Main Library',type:'Public library',lat:37.5481,lng:-121.9887},{name:'Oakland Public Library Main Branch',type:'Public library, Oakland',lat:37.8044,lng:-122.2712},{name:'Berkeley Public Library Central',type:'Public library, Berkeley',lat:37.8693,lng:-122.2686}], tags:['amenity=library'], tip:'Any public library branch works reliably.' },
+  { id:'sushirestaurant', name:'Sushi Restaurant', icon:'🍣', wear:'Sushi', locations:[{name:'Sushi Sam\'s Fremont',type:'Sushi restaurant',lat:37.5488,lng:-121.9881},{name:'Ozumo Restaurant Oakland',type:'Sushi restaurant, Oakland',lat:37.7945,lng:-122.2770},{name:'Akikos Sushi San Francisco',type:'Sushi restaurant, San Francisco',lat:37.7879,lng:-122.4001}], tags:['cuisine=sushi'], tip:'Any sushi restaurant works. Sushi counters inside grocery stores may not qualify.' },
+  { id:'mountain', name:'Mountain', icon:'⛰️', wear:'Mountain pin badge', locations:[{name:'Mission Peak Regional Preserve',type:'Peak, Fremont',lat:37.5126,lng:-121.8802},{name:'Mt. Tamalpais State Park',type:'Peak, Marin County',lat:37.9235,lng:-122.5975},{name:'Mt. Diablo State Park',type:'Peak, Contra Costa',lat:37.8816,lng:-121.9143}], tags:['natural=peak'], tip:'Must be near an actual named peak or summit. General hiking trails alone may not count.' },
+  { id:'stadium', name:'Stadium', icon:'🏟️', wear:'Ball keychain', locations:[{name:'Oracle Park',type:'Baseball stadium, San Francisco',lat:37.7786,lng:-122.3893},{name:'SAP Center',type:'Arena, San Jose',lat:37.3326,lng:-121.9010},{name:'PayPal Park',type:'Soccer stadium, San Jose',lat:37.3513,lng:-121.9253}], tags:['leisure=stadium'], tip:'Large sports stadiums and arenas both work. College stadiums may also qualify.' },
+  { id:'busstop', name:'Bus Stop', icon:'🚌', wear:'Bus papercraft', locations:[{name:'AC Transit Stop — Fremont Blvd',type:'Bus stop, Fremont',lat:37.5485,lng:-121.9886},{name:'AC Transit Stop — International Blvd Oakland',type:'Bus stop, Oakland',lat:37.7901,lng:-122.2134},{name:'Muni Bus Stop — Market & Powell SF',type:'Bus stop, San Francisco',lat:37.7840,lng:-122.4085}], tags:['highway=bus_stop'], tip:'Very common — almost any named bus stop on the street counts.' },
+  { id:'italianrestaurant', name:'Italian Restaurant', icon:'🍕', wear:'Pizza / Pasta', locations:[{name:'Primavera Ristorante Fremont',type:'Italian restaurant',lat:37.5494,lng:-121.9879},{name:'Oliveto Restaurant Oakland',type:'Italian restaurant, Oakland',lat:37.8110,lng:-122.2495},{name:'Cotogna San Francisco',type:'Italian restaurant, San Francisco',lat:37.7970,lng:-122.4057}], tags:['cuisine=pizza','cuisine=italian'], tip:'Any Italian restaurant or pizzeria. Most Italian-named eateries qualify.' },
+  { id:'ramenrestaurant', name:'Ramen Restaurant', icon:'🍜', wear:'Ramen keychain', locations:[{name:'Ramen Izakaya Yu Fremont',type:'Ramen restaurant',lat:37.5490,lng:-121.9875},{name:'Mensho Tokyo San Francisco',type:'Ramen restaurant, San Francisco',lat:37.7826,lng:-122.4162},{name:'Sapporo-Ya Ramen Japantown SF',type:'Ramen restaurant, San Francisco',lat:37.7851,lng:-122.4307}], tags:['cuisine=ramen'], tip:'Any dedicated ramen shop. Japanese noodle restaurants often count too.' },
+  { id:'bridge', name:'Bridge', icon:'🌉', wear:'Bridge pin badge', locations:[{name:'Golden Gate Bridge',type:'Bridge, San Francisco',lat:37.8199,lng:-122.4783},{name:'Bay Bridge (Oakland side)',type:'Bridge, Oakland',lat:37.8044,lng:-122.2712},{name:'Dumbarton Bridge',type:'Bridge, Fremont/Newark',lat:37.5085,lng:-122.1178}], tags:['bridge=yes'], tip:'Must be on or right next to a bridge. Small footbridges can count too.' },
+  { id:'hotel', name:'Hotel', icon:'🏨', wear:'Hotel amenities', locations:[{name:'Hyatt Place Fremont',type:'Hotel, Fremont',lat:37.5499,lng:-121.9856},{name:'Marriott Oakland City Center',type:'Hotel, Oakland',lat:37.8044,lng:-122.2712},{name:'Union Square Hotels',type:'Hotel district, San Francisco',lat:37.7880,lng:-122.4075}], tags:['tourism=hotel'], tip:'Any hotel works — from small guesthouses to large chains.' },
+  { id:'makeupstore', name:'Makeup Store', icon:'💄', wear:'Makeup', locations:[{name:'Sephora Newpark Mall',type:'Cosmetics store, Newark',lat:37.5278,lng:-122.0408},{name:'Ulta Beauty Fremont',type:'Beauty store, Fremont',lat:37.5498,lng:-121.9888},{name:'Sephora Union Square SF',type:'Cosmetics store, San Francisco',lat:37.7878,lng:-122.4067}], tags:['shop=department_store'], tip:'Dedicated cosmetics stores work best. Department store beauty counters may not always count.' },
+  { id:'curryrestaurant', name:'Curry Restaurant', icon:'🍛', wear:'Curry bowl', locations:[{name:'Curry House Fremont',type:'Curry restaurant',lat:37.5492,lng:-121.9878},{name:'Vik\'s Chaat Berkeley',type:'Indian restaurant, Berkeley',lat:37.8628,lng:-122.2865},{name:'Dosa on Fillmore SF',type:'South Indian restaurant, San Francisco',lat:37.7858,lng:-122.4308}], tags:['cuisine=curry','cuisine=indian'], tip:'Indian, Thai, and other curry-focused restaurants all qualify.' },
+  { id:'diystore', name:'DIY Store', icon:'🔧', wear:'Tool', locations:[{name:'Home Depot Fremont',type:'DIY store chain',lat:37.5422,lng:-121.9903},{name:'Lowe\'s Newark',type:'DIY store chain',lat:37.5238,lng:-122.0397},{name:'Orchard Supply Hardware San Jose',type:'Hardware store',lat:37.3382,lng:-121.8863}], tags:['shop=doityourself'], tip:'Large hardware or home improvement stores work best. Small local hardware shops may not always qualify.' },
+  { id:'mexicanrestaurant', name:'Mexican Restaurant', icon:'🌮', wear:'Taco', locations:[{name:'Tacos El Grullense Fremont',type:'Mexican restaurant',lat:37.5480,lng:-121.9882},{name:'La Palma Mexicatessen Fruitvale Oakland',type:'Mexican restaurant, Oakland',lat:37.7658,lng:-122.2241},{name:'Nopalito San Francisco',type:'Mexican restaurant, San Francisco',lat:37.7813,lng:-122.4399}], tags:['cuisine=mexican'], tip:'Any Mexican restaurant or taqueria works.' },
+  { id:'laundromat', name:'Laundromat', icon:'🧺', wear:'Laundry item', locations:[{name:'Laundry World Fremont',type:'Laundromat',lat:37.5488,lng:-121.9875},{name:'Wash Club Oakland',type:'Laundromat, Oakland',lat:37.8012,lng:-122.2698},{name:'Brain Wash Cafe & Laundromat SF',type:'Laundromat, San Francisco',lat:37.7726,lng:-122.4104}], tags:['shop=laundry'], tip:'Self-service coin laundromats work. Dry cleaners may not always qualify.' },
+  { id:'themepark', name:'Theme Park', icon:'🎢', wear:'Theme park ticket', locations:[{name:'California\'s Great America',type:'Theme park, Santa Clara',lat:37.3970,lng:-121.9745},{name:'Bonfante Gardens (Gilroy Gardens)',type:'Theme park, Gilroy',lat:37.0140,lng:-121.5729},{name:'Six Flags Discovery Kingdom',type:'Theme park, Vallejo',lat:38.1371,lng:-122.2346}], tags:['tourism=theme_park'], tip:'Must be inside or at the entrance of the park. Nearby parking lots won\'t count.' },
+  { id:'university', name:'University', icon:'🎓', wear:'College crest patch', locations:[{name:'UC Berkeley',type:'University, Berkeley',lat:37.8724,lng:-122.2595},{name:'Stanford University',type:'University, Palo Alto',lat:37.4275,lng:-122.1697},{name:'San Jose State University',type:'University, San Jose',lat:37.3352,lng:-121.8811}], tags:['amenity=university'], tip:'Must be on a university or college campus.' },
+  { id:'appliancesstore', name:'Appliances Store', icon:'🔌', wear:'Battery / Fairy lights', locations:[{name:'Best Buy Fremont',type:'Electronics & appliances store',lat:37.5501,lng:-121.9856},{name:'Best Buy Emeryville',type:'Electronics & appliances store, Emeryville',lat:37.8353,lng:-122.2922},{name:'P.C. Richard & Son — no Bay Area; use Best Buy',type:'Appliances store',lat:37.5501,lng:-121.9856}], tags:['shop=appliance'], tip:'Large electronics and appliance stores work reliably. Not all home goods stores count.' },
+  { id:'shrinestemples', name:'Shrines and Temples', icon:'⛩️', wear:'Fortune', exclusive:'Japan', locations:[], tags:['amenity=place_of_worship'], tip:'⚠️ Japan exclusive. Only available near shrines and temples in Japan — not accessible in other countries.' },
+  { id:'roadside', name:'Roadside', icon:'🪧', wear:'Coin or Sticker', skipOverpass:true, note:'Basically everywhere you walk outside.<br>These little ones show up wherever your feet take you! 🚶', category:'roadside', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock','Ice'], rareVariants:['★ Rare'], letterColors:['Red','Yellow','Blue','Purple','White','Winged','Rock','Ice'], locations:[], tags:[], tip:'The sticker letter comes from the name of the place where your seedling was found. Walk in different areas to collect different letters toward the full alphabet.' },
+  { id:'weather', name:'Weather', icon:'🌦️', wear:'Rainy Day / Snowy Day', skipOverpass:true, note:'Only available outdoors during rainy or snowy weather.', locations:[], tags:[], tip:'⚠️ Weather-dependent. Rainy Day appears during rainy weather, Snowy Day during snowfall. The in-game weather may not always match real-world conditions exactly.' },
+];
+
+// ─── EVENT DECORS ─────────────────────────────────────────────────────────────
+const eventDecors = [
+  // Holiday — newest first
+  { id:'halloweenlight', name:'Halloween Light', icon:'🕯️', wear:'Halloween Light', category:'Holiday', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'halloweentreat', name:'Halloween Treat', icon:'🍬', wear:'Halloween Treat', category:'Holiday', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'jackolantern', name:"Jack-o'-Lantern", icon:'🎃', wear:"Jack-o'-Lantern", category:'Holiday', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'choco2026', name:'2026 Chocolate', icon:'🍫', wear:'Chocolate', category:'Holiday', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock','Ice'] },
+  { id:'valentinesticker', name:'Valentine Sticker', icon:'💝', wear:'Valentine Sticker', category:'Holiday', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'reversevalentine', name:'Reverse Valentine Sticker', icon:'💌', wear:'Reverse Valentine Sticker', category:'Holiday', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'easteregg', name:'Easter Egg / Bunny Egg', icon:'🥚', wear:'Easter Egg / Bunny Egg', category:'Holiday', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'ballornament', name:'Ball Ornament', icon:'🎄', wear:'Ball Ornament', category:'Holiday', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'mitten', name:'Mitten', icon:'🧤', wear:'Mitten', category:'Holiday', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  // Spring & Summer — newest first
+  { id:'icecream', name:'Ice Cream', icon:'🍦', wear:'Ice Cream', category:'Spring & Summer', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'shavedice', name:'Shaved Ice', icon:'🧊', wear:'Shaved Ice', category:'Spring & Summer', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'surfboard', name:'Surfboard Keychain', icon:'🏄', wear:'Surfboard Keychain', category:'Spring & Summer', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'sneakerkeychain', name:'Sneaker Keychain', icon:'👟', wear:'Sneaker Keychain', category:'Spring & Summer', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  // Cultural — newest first
+  { id:'lunarnewyeargold', name:'Lunar New Year Ornament (Gold)', icon:'🏮', wear:'Gold Ornament', category:'Cultural', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'lunarnewyearred', name:'Lunar New Year Ornament (Red)', icon:'🧧', wear:'Red Ornament', category:'Cultural', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'riocarnival', name:'Rio Carnival', icon:'🎭', wear:'Rio Carnival', category:'Cultural', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'colorpowder', name:'Color Powder', icon:'🎨', wear:'Color Powder', category:'Cultural', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock','Ice'] },
+  { id:'klompen', name:'Klompen Keychain', icon:'🪵', wear:'Klompen Keychain', category:'Cultural', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock','Ice'] },
+  { id:'mahjong', name:'Mahjong Tile', icon:'🀄', wear:'Mahjong Tile', category:'Cultural', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'mooncake', name:'Mooncake', icon:'🥮', wear:'Mooncake', category:'Cultural', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'calavera', name:'Calavera', icon:'💀', wear:'Calavera', category:'Cultural', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'afternoontea', name:'Afternoon Tea', icon:'🫖', wear:'Afternoon Tea', category:'Cultural', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'osechi', name:'Osechi', icon:'🎑', wear:'Osechi', category:'Cultural', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock','Ice'] },
+  // New Year — newest first
+  { id:'partypopper2025', name:'Party Popper 2025', icon:'🎉', wear:'Party Popper', category:'New Year', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'ornament2025', name:'2025 Ornament', icon:'✨', wear:'2025 Ornament', category:'New Year', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock','Ice'] },
+  { id:'nyglasses2024', name:'2024 Glasses', icon:'🕶️', wear:'2024 Glasses', category:'New Year', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'nyglasses2023', name:'2023 Glasses', icon:'🕶️', wear:'2023 Glasses', category:'New Year', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  // Collaboration — newest first
+  { id:'mario', name:'Super Mario Keychain', icon:'🍄', wear:'Mario Keychain', category:'Collaboration', colors:['Red','Yellow','Blue','Purple'] },
+  { id:'goldentoyairplane', name:'Golden Toy Airplane', icon:'✈️', wear:'Golden Toy Airplane', category:'Collaboration', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'nintendoconsoles', name:'Nintendo Consoles', icon:'🎮', wear:"Nintendo Console '80–'95", category:'Collaboration', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'tinyinstrument', name:'Tiny Instrument', icon:'🎵', wear:'Tiny Instrument', category:'Collaboration', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'pikmin4ship', name:'Pikmin 4 Spaceship', icon:'🚀', wear:'Pikmin 4 Spaceship', category:'Collaboration', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'chesspiece', name:'Chess Piece', icon:'♟️', wear:'Chess Piece', category:'Collaboration', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'fingerboard', name:'Fingerboard', icon:'🛹', wear:'Fingerboard', category:'Collaboration', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'koppaitesuit', name:'Koppaite Space Suit', icon:'👨‍🚀', wear:'Koppaite Space Suit', category:'Collaboration', colors:['Red','Yellow','Blue'] },
+  // Anniversary — newest first
+  { id:'fourthanniversary', name:'4th Anniversary', icon:'🎊', wear:'4th Anniversary', category:'Anniversary', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'photobuttonbadge', name:'Photo Button Badge', icon:'📸', wear:'Photo Button Badge', category:'Anniversary', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'thirdanniversary', name:'3rd Anniversary Cupcake', icon:'🧁', wear:'Anniversary Cupcake', category:'Anniversary', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'firstanniversary', name:'1st Anniversary Snack', icon:'🎂', wear:'Anniversary Snack', category:'Anniversary', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  // Other — newest first
+  { id:'pacifier', name:'Pacifier', icon:'🍼', wear:'Pacifier', category:'Other', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'seasonalstickers', name:'Seasonal Stickers', icon:'🍂', wear:'Seasonal Sticker', category:'Other', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'playingcard', name:'Playing Card', icon:'🃏', wear:'Playing Card', category:'Other', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'presentstickerGold', name:'Present Sticker (Gold)', icon:'🎁', wear:'Present Sticker (Gold)', category:'Other', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'puzzle', name:'Puzzle', icon:'🧩', wear:'Puzzle', category:'Other', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+  { id:'flowercard', name:'Flower Card', icon:'🌸', wear:'Flower Card', category:'Other', colors:['Red','Yellow','Blue','Purple','White','Winged','Rock'] },
+];
+
+// ─── COLOR / VARIANT HELPERS ────────────────────────────────────────────────
+const FULL_7=['Red','Yellow','Blue','Purple','White','Winged','Rock'];
+const FULL_8=['Red','Yellow','Blue','Purple','White','Winged','Rock','Ice'];
+const DECOR_COLORS={
+  themepark:['Red','Yellow','Blue'],university:['Red','Yellow','Blue'],appliancesstore:['Yellow'],
+  restaurant:FULL_8,forest:FULL_8,koreanrestaurant:FULL_8,weather:FULL_8
+};
+const VARIANT_COLORS={'station:2':['Red']}; // Gold Ticket is Red only
+const COLOR_BG={Red:'#f5c8c8',Yellow:'#f5e89a',Blue:'#b8d4f0',Purple:'#d8b8f0',White:'#ebebeb',Rock:'#cec8bc',Winged:'#f5c0dc',Ice:'#c8eef5'};
+const COLOR_ABBR={Red:'R',Yellow:'Y',Blue:'B',Purple:'P',White:'W',Rock:'K',Winged:'Wi',Ice:'Ic'};
+const COLOR_IMG={Red:'images/red.png',Yellow:'images/yellow.png',Blue:'images/blue.png',Purple:'images/purple.png',White:'images/white.png',Rock:'images/rock.png',Winged:'images/pink.png',Ice:'images/icy.png'};
+const COLOR_IMG_CHK={Red:'images/red_chk.png',Yellow:'images/yellow_chk.png',Blue:'images/blue_chk.png',Purple:'images/purple_chk.png',White:'images/white_chk.png',Rock:'images/rock_chk.png',Winged:'images/pink_chk.png',Ice:'images/icy_chk.png'};
+function colorsFor(d,vi){if(vi!==undefined){const vk=`${d.id}:${vi}`;if(VARIANT_COLORS[vk])return VARIANT_COLORS[vk];}return d.colors||DECOR_COLORS[d.id]||FULL_7;}
+function getVariants(d){return d.wear.split(' / ').map(v=>v.trim());}
+function slotKey(id,vi,color){return`${id}:${vi}:${color}`;}
+function findDecor(id){return decors.find(x=>x.id===id)||eventDecors.find(x=>x.id===id);}
+function baseSlots(d){return getVariants(d).reduce((s,v,vi)=>s+colorsFor(d,vi).length,0);}
+function letterSlots(d){return d.letterColors?26*d.letterColors.length:0;}
+function letterDone(d){
+  if(!d.letterColors)return 0;
+  let n=0;
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>d.letterColors.forEach(c=>{if(collected.has(slotKey(d.id,`sticker-${l}`,c)))n++;}));
+  return n;
+}
+function totalSlots(d){const r=d.rareVariants?d.rareVariants.length*colorsFor(d).length:0;return baseSlots(d)+r+letterSlots(d);}
+function doneSlots(d){
+  let n=0;
+  getVariants(d).forEach((v,vi)=>colorsFor(d,vi).forEach(c=>{if(collected.has(slotKey(d.id,vi,c)))n++;}));
+  if(d.rareVariants)d.rareVariants.forEach((v,ri)=>colorsFor(d).forEach(c=>{if(collected.has(slotKey(d.id,`r${ri}`,c)))n++;}));
+  return n+letterDone(d);
+}
+function isBaseComplete(d){return getVariants(d).every((v,vi)=>colorsFor(d,vi).every(c=>collected.has(slotKey(d.id,vi,c))));}
+function isDecorFullyCollected(d){return doneSlots(d)===totalSlots(d);}
+function getTotalSlots(){return decors.reduce((s,d)=>s+totalSlots(d),0);}
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let collected = new Set(JSON.parse(localStorage.getItem('pikgarden-collected')||'[]'));
+let collectionTab = 'regular';
+let openAccordions = new Set();
+let closedAccordions = new Set();
+function isDesktop(){ return window.innerWidth>=640; }
+function isAccordionOpen(d){ if(isDesktop()||d.id==='roadside')return true; return openAccordions.has(d.id)||(closedAccordions.has(d.id)?false:!isDecorFullyCollected(d)); }
+let userCoords = (()=>{try{const s=localStorage.getItem('pikgarden-coords');return s?JSON.parse(s):null;}catch(e){return null;}})();
+const CACHE_TTL=24*60*60*1000;
+const overpassCache=(()=>{try{const raw=localStorage.getItem('pikgarden-overpass-cache');if(!raw)return{};const stored=JSON.parse(raw);const now=Date.now();Object.keys(stored).forEach(k=>{if(now-stored[k].ts>CACHE_TTL)delete stored[k];});return stored;}catch(e){return{};}})();
+function saveOverpassCache(){try{localStorage.setItem('pikgarden-overpass-cache',JSON.stringify(overpassCache));}catch(e){}}
+let currentFilter = 'all';
+let selectedId = null;
+let isReturning = localStorage.getItem('pikgarden-returning')==='true';
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function saveCollected(){localStorage.setItem('pikgarden-collected',JSON.stringify([...collected]));localStorage.setItem('pikgarden-returning','true');isReturning=true;}
+function haversine(lat1,lng1,lat2,lng2){const R=3958.8,dL=(lat2-lat1)*Math.PI/180,dG=(lng2-lng1)*Math.PI/180,a=Math.sin(dL/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+function useMiles(){
+  if(!userCoords)return false;
+  const{lat,lng}=userCoords;
+  if(lat>=18&&lat<=72&&lng>=-180&&lng<=-65)return true; // US
+  if(lat>=49&&lat<=61&&lng>=-8&&lng<=2)return true; // UK
+  return false;
+}
+function fmtDist(m){
+  if(!isFinite(m)||m<0)return'';
+  if(useMiles()){
+    if(m<0.1)return'nearby';
+    if(m<1)return Math.round(m*5280)+' ft';
+    return m.toFixed(1)+' mi';
+  }else{
+    const km=m*1.60934;
+    if(km<0.15)return'nearby';
+    if(km<1)return Math.round(km*1000)+' m';
+    return km.toFixed(1)+' km';
+  }
+}
+function normalize(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+function getNearestDist(d){
+  if(!userCoords)return null;
+  let locs=d.locations||[];
+  if(locs.length===0){const key=`${d.id}:${userCoords.lat.toFixed(2)}:${userCoords.lng.toFixed(2)}`;locs=(overpassCache[key]&&overpassCache[key].data)||[];}
+  if(locs.length===0)return null;
+  return Math.min(...locs.map(l=>haversine(userCoords.lat,userCoords.lng,l.lat,l.lng)));
+}
+function getSortedLocations(locs){if(!userCoords)return locs;return[...locs].map(l=>({...l,distance:haversine(userCoords.lat,userCoords.lng,l.lat,l.lng)})).sort((a,b)=>a.distance-b.distance);}
+
+// ─── LOCATION ────────────────────────────────────────────────────────────────
+let toastTimer=null;
+let waveTimer=null;
+function stopWave(){if(waveTimer){clearInterval(waveTimer);waveTimer=null;}}
+function startWave(label){
+  const input=document.getElementById('locationInput');
+  const frames=['◐','◓','◑','◒'];
+  let i=0;
+  function tick(){input.value=frames[i%4]+'  '+label;i++;}
+  tick();
+  waveTimer=setInterval(tick,120);
+}
+function setInputStatus(t,isSuccess){
+  const input=document.getElementById('locationInput');
+  const clearBtn=document.getElementById('locationClear');
+  const searchIcon=document.getElementById('locationSearchIcon');
+  input.value=t;
+  input.readOnly=true;
+  input.style.color=isSuccess?'#3a8a24':'#666666';
+  if(isSuccess){
+    input.readOnly=false;
+    if(clearBtn)clearBtn.style.display='flex';
+    if(searchIcon)searchIcon.style.display='none';
+    if(userCoords)localStorage.setItem('pikgarden-coords',JSON.stringify(userCoords));
+    localStorage.setItem('pikgarden-location-label',t);
+  }
+}
+function showLocationConfirm(t,restore='',isSuccess=false){
+  const input=document.getElementById('locationInput');
+  stopWave();
+  if(isSuccess){
+    setInputStatus(t,true);
+  } else {
+    input.value=t;
+    input.readOnly=true;
+    input.style.color='#666666';
+    if(toastTimer)clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>{
+      input.style.color='';
+      input.readOnly=false;
+      input.value=restore;
+    },3500);
+  }
+}
+function onLocationInputFocus(){
+  const clearBtn=document.getElementById('locationClear');
+  if(clearBtn&&clearBtn.style.display==='block') clearLocation();
+}
+function clearLocation(){
+  const input=document.getElementById('locationInput');
+  const clearBtn=document.getElementById('locationClear');
+  const searchIcon=document.getElementById('locationSearchIcon');
+  userCoords=null;
+  localStorage.removeItem('pikgarden-coords');
+  localStorage.removeItem('pikgarden-location-label');
+  localStorage.removeItem('pikgarden-overpass-cache');
+  Object.keys(overpassCache).forEach(k=>delete overpassCache[k]);
+  input.value='';
+  input.readOnly=false;
+  input.style.color='';
+  if(clearBtn)clearBtn.style.display='none';
+  if(searchIcon)searchIcon.style.display='block';
+  input.focus();
+  renderAll();
+}
+let isLocating=false;
+function useMyLocation(){
+  if(isLocating)return;
+  const input=document.getElementById('locationInput');
+  if(!navigator.geolocation){showLocationConfirm('Geolocation not supported — try typing manually','',false);return;}
+  isLocating=true;
+  input.readOnly=true;
+  input.style.color='#666666';
+  startWave('Detecting your location…');
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      isLocating=false;
+      stopWave();
+      userCoords={lat:pos.coords.latitude,lng:pos.coords.longitude};
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&zoom=10`)
+        .then(r=>r.json())
+        .then(data=>{
+          const a=data.address||{};
+          const city=a.city||a.town||a.village||a.county||'your location';
+          const state=a.state_code||a.state||a.country||'';
+          const label=state?`${city}, ${state}`:city;
+          setInputStatus(`Location Set: ${label} ✓`,true);
+        })
+        .catch(()=>setInputStatus('Location detected — distances updated',true));
+      renderAll();
+    },
+    ()=>{isLocating=false;stopWave();showLocationConfirm('Could not detect location — try typing manually','',false);}
+  );
+}
+function setManualLocation(){
+  const val=document.getElementById('locationInput').value.trim();
+  if(!val)return;
+  const input=document.getElementById('locationInput');
+  input.readOnly=true;input.style.color='#94a88e';
+  startWave('Looking up location…');
+  fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&format=json&limit=1&addressdetails=1`)
+    .then(r=>r.json())
+    .then(data=>{
+      stopWave();
+      if(data&&data.length>0){
+        userCoords={lat:parseFloat(data[0].lat),lng:parseFloat(data[0].lon)};
+        const a=data[0].address||{};
+        const city=a.city||a.town||a.village||a.county||data[0].display_name.split(',')[0].trim();
+        const cc=(a.country_code||'').toLowerCase();
+        const usesStateCode=['us','ca','au'].includes(cc);
+        const stateCode=usesStateCode?(a['ISO3166-2-lvl4']||'').split('-')[1]||a.state||'':'';
+        const region=stateCode||(!usesStateCode&&a.country&&a.country!==city?a.country:'');
+        const label=region?`${city}, ${region}`:city;
+        setInputStatus(`Location Set: ${label} ✓`,true);
+        renderAll();
+      } else {
+        stopWave();showLocationConfirm('Location not found — try a city name',val,false);
+      }
+    })
+    .catch(()=>{stopWave();showLocationConfirm('Could not look up location — check your connection',val,false);});
+}
+
+// ─── OVERPASS API ────────────────────────────────────────────────────────────
+function buildOverpassQuery(tags,lat,lng,radius=5000){
+  const parts=tags.flatMap(tag=>{const[k,v]=tag.split('=');return[`node["${k}"="${v}"](around:${radius},${lat},${lng});`,`way["${k}"="${v}"](around:${radius},${lat},${lng});`];});
+  return`[out:json][timeout:25];\n(\n${parts.join('\n')}\n);\nout center 8;`;
+}
+function osmTagToLabel(tag){const[,v]=tag.split('=');return v.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
+async function fetchOverpassLocations(decor,lat,lng){
+  const key=`${decor.id}:${lat.toFixed(2)}:${lng.toFixed(2)}`;
+  if(overpassCache[key])return overpassCache[key].data;
+  const query=buildOverpassQuery(decor.tags,lat,lng);
+  const controller=new AbortController();
+  const timeoutId=setTimeout(()=>controller.abort(),30000);
+  try{
+    const resp=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(query),signal:controller.signal});
+    clearTimeout(timeoutId);
+    const json=await resp.json();
+    const results=json.elements
+      .filter(el=>el.tags&&el.tags.name)
+      .map(el=>{
+        const elLat=el.lat??el.center?.lat;
+        const elLng=el.lon??el.center?.lon;
+        const matchedTag=decor.tags.find(t=>{const[k,v]=t.split('=');return el.tags[k]===v;});
+        return{name:el.tags.name,type:osmTagToLabel(matchedTag||decor.tags[0]),lat:elLat,lng:elLng};
+      })
+      .filter(l=>l.lat&&l.lng)
+      .slice(0,8);
+    if(results.length>0){overpassCache[key]={data:results,ts:Date.now()};saveOverpassCache();}
+    return results;
+  }catch(e){
+    clearTimeout(timeoutId);
+    throw e;
+  }
+}
+function renderLocItem(l){return`<li class="location-item"><div class="loc-info"><div class="loc-name">${l.name}</div><div class="loc-meta"><span class="loc-type">${l.type}</span>${l.distance!==undefined?`<span class="loc-distance-badge">${fmtDist(l.distance)}</span>`:''}</div></div>${l.lat&&l.lng?`<button class="maps-btn" onclick="openMaps('${l.name.replace(/'/g,"\\'").replace(/"/g,'&quot;')}',${l.lat},${l.lng})">Open in Maps</button>`:''}</li>`;}
+let listSpinnerTimer=null;
+function startListSpinner(spinnerId,label){
+  stopListSpinner();
+  const frames=['◐','◓','◑','◒'];let i=0;
+  function tick(){
+    const el=document.getElementById(spinnerId);
+    if(el){el.textContent=frames[i%4]+' '+label;i++;}
+  }
+  tick();
+  listSpinnerTimer=setInterval(tick,120);
+}
+function stopListSpinner(){if(listSpinnerTimer){clearInterval(listSpinnerTimer);listSpinnerTimer=null;}}
+const noLocsMsg=(msg)=>`<li style="font-size:13px;color:#aaa;padding:14px 0;list-style:none;">${msg}</li>`;
+const noLocsErr=(listId,decorId)=>`<li style="list-style:none;padding:16px 0 20px;text-align:center;">
+  <img src="images/bare-tree.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;">
+  <p style="font-size:15px;color:#c4905a;margin:0 0 14px;">The search dried up. 🥀</p>
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+    <button class="retry-btn" onclick="retryOverpassLoad('${listId}','${decorId}')"><span class="retry-btn-icon">↺</span> Try again</button>
+    <span style="font-size:15px;color:#6a7d66;">— the little ones will search harder! 🌱</span>
+  </div>
+</li>`;
+function retryOverpassLoad(listId,decorId){
+  const decor=findDecor(decorId);
+  const el=document.getElementById(listId);
+  if(!decor||!el||!userCoords)return;
+  el.innerHTML=`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby…</li>`;
+  loadOverpassIntoList(listId,decor);
+}
+const retryLabels=['Trying once more…','One last try…'];
+const activeOverpassLoads=new Set();
+async function loadOverpassIntoList(listId,decor){
+  if(activeOverpassLoads.has(listId))return;
+  activeOverpassLoads.add(listId);
+  const el=document.getElementById(listId);
+  if(!el){activeOverpassLoads.delete(listId);return;}
+  startListSpinner(listId+'-spinner','Searching nearby…');
+  let locs=null, lastErr=null;
+  try{
+    for(let attempt=0;attempt<3;attempt++){
+      try{
+        locs=await fetchOverpassLocations(decor,userCoords.lat,userCoords.lng);
+        break;
+      }catch(e){
+        lastErr=e;
+        if(attempt<2){
+          await new Promise(r=>setTimeout(r,2000));
+          const listEl=document.getElementById(listId);
+          if(!listEl)return;
+          listEl.innerHTML=`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;"></li>`;
+          startListSpinner(listId+'-spinner',retryLabels[attempt]);
+        }
+      }
+    }
+  }finally{
+    activeOverpassLoads.delete(listId);
+    stopListSpinner();
+  }
+  if(locs){
+    el.innerHTML=locs.length===0?`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/wind.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#94a88e;margin:0 0 10px;">Nothing nearby.</p><p style="font-size:11px;color:#94a88e;line-height:1.6;margin:0;">Try moving to a different area or <a href="#" onclick="useMyLocation();return false;" style="color:#94a88e;text-decoration:underline;text-underline-offset:2px;">updating your location</a>.</p></li>`:getSortedLocations(locs).map(renderLocItem).join('');
+    renderMobileGrid();renderDesktopList();
+  }else{
+    el.innerHTML=noLocsErr(listId,decor.id);
+  }
+}
+
+// ─── FILTER & SEARCH ─────────────────────────────────────────────────────────
+function setFilter(f,btn){currentFilter=f;btn.closest('.sub-tabs').querySelectorAll('.sub-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAll();}
+function getFilteredDecors(){
+  let list=[...decors];
+  if(currentFilter==='missing')list=list.filter(d=>!isBaseComplete(d));
+  if(userCoords)list=list.map(d=>({...d,nearestDist:getNearestDist(d)})).sort((a,b)=>(a.nearestDist||999)-(b.nearestDist||999));
+  return list;
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function showTab(tab,btn,scrollToId){
+  document.querySelectorAll('.tab-section').forEach(s=>s.style.display='none');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(tab).style.display='block';btn.classList.add('active');
+  localStorage.setItem('pikgarden-tab',tab);
+  if(tab==='collection'){renderCollection();if(scrollToId)scrollToDecor(scrollToId);}
+  if(tab==='finder'){
+    const btn=document.querySelector('.loc-btn');
+    if(btn){
+      btn.style.animation='none';
+      btn.offsetWidth;
+      btn.style.animation='btnEntrance 0.55s cubic-bezier(0.34,1.56,0.64,1) both';
+    }
+    setTimeout(()=>{ document.getElementById('locationInput')?.focus(); },100);
+  }
+}
+function scrollToDecor(id){
+  openAccordions.add(id);closedAccordions.delete(id);
+  renderCollection();
+  setTimeout(()=>{
+    const mCol=document.getElementById('mobile-collection');
+    const dCol=document.getElementById('desktop-collection');
+    const container=mCol.offsetParent?mCol:dCol;
+    const header=container.querySelector(`[data-decor-id="${id}"]`);
+    if(header){
+      header.scrollIntoView({behavior:'smooth',block:'center'});
+      const item=header.closest('.accordion-item');
+      if(item){
+        setTimeout(()=>{
+          item.classList.remove('card-highlight');
+          item.offsetWidth;
+          item.classList.add('card-highlight');
+        },600);
+      }
+    }
+  },80);
+}
+
+// ─── RENDER ALL ──────────────────────────────────────────────────────────────
+function renderAll(){
+  renderMobileGrid();
+  renderDesktopList();
+  const mobileDetail=document.getElementById('mobile-finder-detail');
+  if(mobileDetail&&mobileDetail.style.display!=='none'&&selectedId){
+    renderDetailContent('mobile-detail-content',selectedId);
+  }
+}
+
+// ─── EMPTY STATES ────────────────────────────────────────────────────────────
+function getMissingEmptyState(){
+  if(collected.size===0)return`<div class="empty-state"><img src="images/kids-watching.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;display:block;margin:0 auto 16px;opacity:0.8;"><div class="empty-state-title">What have you already found?</div><div class="empty-state-text">Mark what you've already collected so we can show only what you're missing.</div><button class="empty-state-btn" onclick="document.querySelectorAll('.tab')[0].click()">Go to Garden Tracker</button></div>`;
+  if(decors.every(d=>isBaseComplete(d)))return`<div class="empty-state"><div class="empty-state-icon">🎉</div><div class="empty-state-title">You've collected them all!</div><div class="empty-state-text">Amazing work, Pikmin master. Check back for new decor types.</div></div>`;
+  return'';
+}
+
+// ─── MOBILE FINDER ───────────────────────────────────────────────────────────
+function renderMobileGrid(){
+  const items=getFilteredDecors();const grid=document.getElementById('mobile-decor-grid');
+  if(currentFilter==='missing'&&items.length===0){grid.innerHTML=getMissingEmptyState();return;}
+  if(!items.length){grid.innerHTML='<div class="empty-state"><div class="empty-state-text">No decors match your search</div></div>';return;}
+  grid.innerHTML=`<div class="decor-grid">${items.map(d=>{const dist=d.nearestDist!==undefined?d.nearestDist:null;const isC=isBaseComplete(d);return`<button type="button" class="decor-card ${isC&&currentFilter==='missing'?'collected-card':''}" onclick="mobileShowDetail('${d.id}')"><span class="decor-icon">${d.icon}</span><div class="decor-name">${d.name}</div><div class="decor-wear">Wears: ${d.wear}</div>${dist!==null?`<span class="card-distance">${fmtDist(dist)}</span>`:''}</button>`;}).join('')}</div>`;
+}
+function mobileShowDetail(id){selectedId=id;localStorage.setItem('pikgarden-selected',id);localStorage.setItem('pikgarden-mobile-detail','1');document.getElementById('mobile-finder-home').style.display='none';document.getElementById('mobile-finder-detail').style.display='block';renderDetailContent('mobile-detail-content',id);window.scrollTo({top:0});}
+function mobileShowHome(){document.getElementById('mobile-finder-home').style.display='block';document.getElementById('mobile-finder-detail').style.display='none';localStorage.removeItem('pikgarden-mobile-detail');}
+
+// ─── DESKTOP FINDER ──────────────────────────────────────────────────────────
+function renderDesktopList(){
+  const items=getFilteredDecors();const list=document.getElementById('desktop-decor-list');
+  const desktopView=document.querySelector('#finder .desktop-view');
+if(currentFilter==='missing'&&items.length===0){list.innerHTML='';document.getElementById('desktop-panel').innerHTML='';if(desktopView)desktopView.innerHTML=`<div style="flex:1;display:flex;align-items:center;justify-content:center;">${getMissingEmptyState()}</div>`;return;}
+  if(!items.length){list.innerHTML='<div class="empty-state"><div class="empty-state-text">No decors match</div></div>';return;}
+  list.innerHTML=items.map(d=>{const dist=d.nearestDist!==undefined?d.nearestDist:null;const isC=isBaseComplete(d);const isSel=selectedId===d.id;return`<button type="button" class="decor-card-desktop ${isSel?'selected':''} ${isC&&currentFilter==='missing'?'collected-card':''}" onclick="desktopSelect('${d.id}')"><span class="desktop-card-icon">${d.icon}</span><div class="desktop-card-info"><div class="desktop-card-name">${d.name}</div><div class="desktop-card-wear">Wears: ${d.wear}</div></div>${dist!==null?`<span class="desktop-card-distance">${fmtDist(dist)}</span>`:''}</button>`;}).join('');
+  renderDesktopPanel();
+}
+function desktopSelect(id){selectedId=id;localStorage.setItem('pikgarden-selected',id);renderDesktopList();const list=document.getElementById('desktop-decor-list');if(list)list.classList.toggle('has-selection',!!id);}
+function renderDesktopPanel(){
+  const panel=document.getElementById('desktop-panel');
+  if(!selectedId){
+    if(!isReturning||!userCoords){panel.innerHTML=`<div class="welcome-panel"><div class="welcome-placeholder">🌱</div><div class="welcome-title">Select a decor to see where to find it</div><div class="welcome-text">Set your location above to see distances and sort by nearest first.</div></div>`;return;}
+    const nearest=getFilteredDecors().filter(d=>!isBaseComplete(d))[0];
+    if(nearest){selectedId=nearest.id;renderDesktopList();return;}
+    panel.innerHTML=`<div class="welcome-panel"><div class="welcome-placeholder">🎉</div><div class="welcome-title">All collected!</div><div class="welcome-text">You've found every decor. Amazing!</div></div>`;return;
+  }
+  panel.innerHTML=`<div class="desktop-detail" id="desktop-detail-content"></div>`;
+  renderDetailContent('desktop-detail-content',selectedId);
+  window.scrollTo({top:0});
+}
+
+// ─── SHARED DETAIL ───────────────────────────────────────────────────────────
+function renderDetailContent(containerId,id){
+  const d=findDecor(id);
+  if(!d){document.getElementById(containerId).innerHTML='';return;}
+  const done=doneSlots(d),total=totalSlots(d);
+  const progressNote=done>0?`<span style="font-size:12px;color:#2d5a1b;font-weight:500;"> — ${done}/${total} collected</span>`:'';
+  const listId=`${containerId}-locs`;
+  const REGION_BOUNDS={Japan:{latMin:24,latMax:46,lngMin:122,lngMax:154}};
+  const exclusiveRegion=d.exclusive?REGION_BOUNDS[d.exclusive]:null;
+  const userInRegion=exclusiveRegion&&userCoords?userCoords.lat>=exclusiveRegion.latMin&&userCoords.lat<=exclusiveRegion.latMax&&userCoords.lng>=exclusiveRegion.lngMin&&userCoords.lng<=exclusiveRegion.lngMax:false;
+  const isExclusive=!!d.exclusive&&!userInRegion;
+  const useOverpass=!isExclusive&&!d.skipOverpass&&userCoords&&d.tags&&d.tags.length>0;
+  const cachedKey=userCoords?`${d.id}:${userCoords.lat.toFixed(2)}:${userCoords.lng.toFixed(2)}`:null;
+  const cached=cachedKey?overpassCache[cachedKey]:null;
+  const cachedData=cached?cached.data:null;
+  const initialLocs=cachedData&&cachedData.length>0?getSortedLocations(cachedData):d.skipOverpass?getSortedLocations(d.locations):[];
+  const exclusiveHtml=`<li style="font-size:14px;color:#888;padding:16px 0;list-style:none;">Only available in ${d.exclusive} — location search not applicable.</li>`;
+  const noteHtml=d.note?`<li style="font-size:14px;color:#888;padding:16px 0;list-style:none;">${d.note}</li>`:null;
+  const noLocationHtml=`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/tree-trunk.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#94a88e;margin:0 0 10px;">No location set yet.</p><p style="font-size:11px;color:#94a88e;line-height:1.6;margin:0;">Tap <a href="#" onclick="useMyLocation();return false;" style="color:#94a88e;text-decoration:underline;text-underline-offset:2px;">Use My Location</a> at the top to find spots near you.</p></li>`;
+  const nothingNearbyHtml=`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/wind.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#94a88e;margin:0 0 10px;">Nothing nearby.</p><p style="font-size:11px;color:#94a88e;line-height:1.6;margin:0;">Try moving to a different area or <a href="#" onclick="useMyLocation();return false;" style="color:#94a88e;text-decoration:underline;text-underline-offset:2px;">updating your location</a>.</p></li>`;
+  const loadingHtml=useOverpass&&!cached?`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby…</li>`:cached&&cachedData.length===0?nothingNearbyHtml:initialLocs.map(renderLocItem).join('');
+  const locsHtml=noteHtml?noteHtml:isExclusive?exclusiveHtml:(!userCoords&&!d.skipOverpass)?noLocationHtml:loadingHtml;
+  document.getElementById(containerId).innerHTML=`
+    <div class="detail-header"><span class="detail-icon">${d.icon}</span><div><div class="detail-name">${d.name} Pikmin</div><div class="detail-subtitle">Wears: ${d.wear}${progressNote}</div></div></div>
+    <div class="tip-box">${d.tip}</div>
+    <div class="section-label" style="margin-bottom:4px;padding-top:28px;">Where to look</div>
+    <ul class="location-list" id="${listId}">${locsHtml}</ul>
+    ${d.tags&&d.tags.length>0?`<div class="section-label" style="margin-bottom:8px;padding-top:28px;">OSM tags</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;">${d.tags.map(t=>`<span class="tag-pill">${t}</span>`).join('')}</div>`:''}
+    <button class="collect-btn" onclick="goToCollection('${id}')" style="border:1px solid #b8d0ac;background:#fff;color:#2d5a1b;font-weight:500;"><span style="font-size:1.3em">🌱</span> Check My Garden</button>
+  `;
+  if(useOverpass&&!cached)loadOverpassIntoList(listId,d);
+}
+function goToCollection(id){
+  const d=findDecor(id);
+  if(d){
+    if(d.category==='roadside') collectionTab='roadside';
+    else if(['Holiday','Spring & Summer','Cultural','New Year','Collaboration','Anniversary','Other'].includes(d.category)) collectionTab='events';
+    else collectionTab='regular';
+    localStorage.setItem('pikgarden-subtab',collectionTab);
+  }
+  const btn=document.querySelectorAll('.tab')[0];
+  showTab('collection',btn,id);
+}
+function openMaps(name,lat,lng){window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&center=${lat},${lng}`,'_blank','noopener,noreferrer');}
+
+// ─── COLLECTION TRACKER ──────────────────────────────────────────────────────
+function setCollectionTab(tab){collectionTab=tab;localStorage.setItem('pikgarden-subtab',tab);renderCollection();}
+function collectionSubTabs(){
+  return`<div class="sub-tabs">`+
+    ['regular','roadside','events'].map(t=>`<button class="sub-tab${collectionTab===t?' active':''}" onclick="setCollectionTab('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')+
+    `</div>`;
+}
+function collectionContent(){
+  if(collectionTab==='roadside'){
+    const list=decors.filter(d=>d.category==='roadside');
+    return list.map(d=>renderAccordionItem(d)).join('');
+  }
+  if(collectionTab==='events'){
+    const cats=[...new Set(eventDecors.map(d=>d.category))];
+    return cats.map(cat=>
+      `<div class="event-category-label">${cat}</div>`+
+      eventDecors.filter(d=>d.category===cat).map(d=>renderAccordionItem(d)).join('')
+    ).join('');
+  }
+  // regular — all decors except roadside
+  return decors.filter(d=>d.category!=='roadside').map(d=>renderAccordionItem(d)).join('');
+}
+function renderCollection(){renderMobileCollection();renderDesktopCollection();}
+window.addEventListener('resize',()=>renderCollection());
+function renderMobileCollection(){
+  document.getElementById('mobile-collection').innerHTML=collectionSubTabs()+collectionContent();
+}
+function renderDesktopCollection(){
+  const content=collectionContent();
+  const isSingle=collectionTab==='roadside';
+  document.getElementById('desktop-collection').innerHTML=
+    collectionSubTabs()+
+    (isSingle?`<div style="max-width:calc(55% - 4px);margin:0 auto;">${content}</div>`:`<div class="collection-accordion-grid">${content}</div>`);
+}
+function renderLetterGrid(d){
+  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  return`<div class="letter-grid">`+
+    `<div class="letter-grid-header">STICKER</div>`+
+    letters.map(letter=>
+      `<div class="letter-row">`+
+      `<span class="letter-label">${letter}</span>`+
+      `<div class="color-grid">`+
+      d.letterColors.map(c=>{
+        const isC=collected.has(slotKey(d.id,`sticker-${letter}`,c));
+        return`<button class="color-cell${isC?' collected':''}" onclick="toggleSlot('${d.id}','sticker-${letter}','${c}')" title="${c} ${letter}"><img src="${isC?COLOR_IMG_CHK[c]:COLOR_IMG[c]}" alt="${c}"></button>`;
+      }).join('')+
+      `</div></div>`
+    ).join('')+
+    `</div>`;
+}
+function renderAccordionItem(d){
+  const done=doneSlots(d),total=totalSlots(d),full=done===total&&total>0,partial=done>0&&!full;
+  const variants=getVariants(d),isOpen=isAccordionOpen(d),baseOk=isBaseComplete(d);
+  const baseHTML=variants.map((v,vi)=>{
+    const colors=colorsFor(d,vi);
+    return`<div class="variant-row">`+
+      (variants.length>1||d.letterColors?`<div class="variant-label">${v}</div>`:'')+
+      `<div class="color-grid">`+
+      colors.map(c=>{
+        const isC=collected.has(slotKey(d.id,vi,c));
+        return`<button class="color-cell${isC?' collected':''}" onclick="toggleSlot('${d.id}',${vi},'${c}')" title="${c}"><img src="${isC?COLOR_IMG_CHK[c]:COLOR_IMG[c]}" alt="${c}"></button>`;
+      }).join('')+
+      `</div></div>`;
+  }).join('');
+  const rareHTML=d.rareVariants?d.rareVariants.map((v,ri)=>{
+    const colors=colorsFor(d);
+    return`<div class="variant-row${baseOk?'':' rare-row-locked'}">`+
+      `<div class="variant-label">${v.replace(/\s*Rare\s*$/i,'').trim()}<span class="rare-badge">RARE</span></div>`+
+      `<div class="color-grid">`+
+      colors.map(c=>{
+        const isC=collected.has(slotKey(d.id,`r${ri}`,c));
+        return`<button class="color-cell${isC?' collected':''}" onclick="toggleSlot('${d.id}','r${ri}','${c}')" title="${c}"><img src="${isC?COLOR_IMG_CHK[c]:COLOR_IMG[c]}" alt="${c}"></button>`;
+      }).join('')+
+      `</div></div>`;
+  }).join(''):'';
+  const isRoadside=d.id==='roadside';
+  return`<div class="accordion-item${full?' full':partial?' partial':''}${isOpen?' open':''}">`+
+    (isRoadside?`<div class="accordion-header" style="cursor:default;">`:`<button type="button" class="accordion-header" data-decor-id="${d.id}" onclick="toggleAccordion('${d.id}')">`)+
+    `<span class="checklist-icon">${d.icon}</span>`+
+    `<span class="checklist-name">${d.name}</span>`+
+    (full?`<span class="done-badge" style="flex-shrink:0">ALL DONE</span>`:'')+
+    (partial?`<div class="acc-progress-bar"><div class="acc-progress-bar-fill" style="width:${Math.round(done/total*100)}%"></div></div>`:(full?'':'<div style="flex:1"></div>'))+
+    (isRoadside?'</div>':'<span class="acc-arrow">▾</span></button>')+
+    `<div class="accordion-body${isOpen?' open':''}${isRoadside?' roadside-body':''}"><div class="accordion-body-inner"><div class="accordion-body-inner-pad">${baseHTML}${rareHTML}${d.letterColors?renderLetterGrid(d):''}${full&&!isRoadside?`<div style="display:flex;align-items:flex-end;justify-content:center;gap:0;margin-top:28px;"><img src="images/spiral-garden.avif" alt="" aria-hidden="true" style="width:160px;height:160px;object-fit:contain;display:block;margin-right:-40px;opacity:0.8;"><img src="images/gardening-woman.avif" alt="" aria-hidden="true" style="width:160px;height:160px;object-fit:contain;display:block;margin-bottom:14px;opacity:0.8;"></div>`:''}</div></div></div>`+
+    `</div>`;
+}
+function toggleAccordion(id){
+  const d=findDecor(id);
+  const wasOpen=isAccordionOpen(d);
+  if(wasOpen){closedAccordions.add(id);openAccordions.delete(id);}
+  else{openAccordions.add(id);closedAccordions.delete(id);}
+  const header=document.querySelector(`[data-decor-id="${id}"]`);
+  const item=header?.closest('.accordion-item');
+  if(item){
+    item.classList.toggle('open',!wasOpen);
+    item.querySelector('.accordion-body')?.classList.toggle('open',!wasOpen);
+    const arrow=item.querySelector('.acc-arrow');
+    if(arrow)arrow.style.transform=wasOpen?'':'rotate(180deg)';
+  }
+}
+function launchFireworks(){
+  const canvas=document.createElement('canvas');
+  canvas.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  document.body.appendChild(canvas);
+  const ctx=canvas.getContext('2d');
+  const colors=['#ff6b6b','#ffd93d','#74b9ff','#a29bfe','#dfe6e9','#b2bec3','#fd79a8','#81ecec','#30B048','#55efc4'];
+  const particles=[];
+  [[0.25,0.65],[0.5,0.55],[0.75,0.65]].forEach(([ox,oy])=>{
+    for(let i=0;i<28;i++){
+      const angle=Math.random()*Math.PI*2;
+      const speed=Math.random()*9+3;
+      particles.push({
+        x:canvas.width*ox,y:canvas.height*oy,
+        vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-6,
+        color:colors[Math.floor(Math.random()*colors.length)],
+        alpha:1,size:Math.random()*5+3,decay:Math.random()*0.018+0.012
+      });
+    }
+  });
+  function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive=false;
+    particles.forEach(p=>{
+      if(p.alpha<=0)return;
+      alive=true;
+      p.x+=p.vx;p.y+=p.vy;p.vy+=0.35;p.vx*=0.98;p.alpha-=p.decay;
+      ctx.save();ctx.globalAlpha=Math.max(0,p.alpha);ctx.fillStyle=p.color;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();ctx.restore();
+    });
+    if(alive)requestAnimationFrame(animate);else canvas.remove();
+  }
+  animate();
+}
+const celebrateTimers={};
+function cancelCelebrate(id){if(celebrateTimers[id]){celebrateTimers[id].forEach(t=>clearTimeout(t));delete celebrateTimers[id];}}
+function toggleSlot(id,vi,color){
+  const key=slotKey(id,vi,color);
+  const d=findDecor(id);
+  const wasFull=isDecorFullyCollected(d);
+  if(collected.has(key))collected.delete(key);else collected.add(key);
+  saveCollected();
+  cancelCelebrate(id);
+  const nowFull=isDecorFullyCollected(d);
+  if(nowFull&&!wasFull){
+    launchFireworks();
+  }
+  renderCollection();renderAll();
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+(()=>{
+  const lastSubTab=localStorage.getItem('pikgarden-subtab');
+  if(lastSubTab)collectionTab=lastSubTab;
+  const lastSelected=localStorage.getItem('pikgarden-selected');
+  if(lastSelected&&findDecor(lastSelected))selectedId=lastSelected;
+  else if(lastSelected){localStorage.removeItem('pikgarden-selected');}
+  const lastTab=localStorage.getItem('pikgarden-tab');
+  if(lastTab==='finder'){
+    const btn=document.querySelectorAll('.tab')[1];
+    showTab('finder',btn);
+    if(lastSelected&&localStorage.getItem('pikgarden-mobile-detail')){
+      setTimeout(()=>mobileShowDetail(lastSelected),0);
+    }
+  }
+})();
+let toastHideTimer=null;
+function showToast(msg){
+  const el=document.getElementById('toast');
+  if(!el)return;
+  if(toastHideTimer)clearTimeout(toastHideTimer);
+  el.textContent=msg;
+  el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)';
+  toastHideTimer=setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(16px)';},2500);
+}
+function exportCollection(){
+  const code=btoa(JSON.stringify([...collected]));
+  navigator.clipboard.writeText(code).then(()=>{
+    showToast('Collection code copied!');
+  }).catch(()=>{
+    prompt('Copy this code:',code);
+  });
+}
+function openImportModal(){
+  document.getElementById('import-input').value='';
+  document.getElementById('import-modal').classList.add('open');
+}
+function closeImportModal(){
+  document.getElementById('import-modal').classList.remove('open');
+}
+function confirmImport(){
+  const code=document.getElementById('import-input').value.trim();
+  if(!code)return;
+  try{
+    const data=JSON.parse(atob(code));
+    if(!Array.isArray(data))throw new Error();
+    collected=new Set(data);
+    saveCollected();
+    closeImportModal();
+    renderAll();renderCollection();
+    showToast(`Imported ${data.length} collected items.`);
+  }catch(e){
+    alert('Invalid code — please check and try again.');
+  }
+}
+
+(()=>{
+  const savedLabel=localStorage.getItem('pikgarden-location-label');
+  if(userCoords&&savedLabel){setInputStatus(savedLabel,true);}
+})();
+renderAll();renderCollection();
+window.addEventListener('scroll',()=>{
+  const btn=document.getElementById('back-to-top');
+  if(btn)btn.classList.toggle('visible',window.scrollY>200);
+});
+</script>
+<div id="import-modal" onclick="if(event.target===this)closeImportModal()">
+  <div class="import-card">
+    <h3>Import Collection</h3>
+    <p>Paste your export code below to load a collection from another device.</p>
+    <textarea id="import-input" placeholder="Paste code here…"></textarea>
+    <div class="import-actions">
+      <button class="import-cancel" onclick="closeImportModal()">Cancel</button>
+      <button class="import-confirm" onclick="confirmImport()">Import</button>
+    </div>
+  </div>
+</div>
+<div id="toast" style="position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(255,255,255,0.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.7);border-radius:99px;padding:10px 20px;font-size:13px;color:#444;font-weight:500;box-shadow:0 8px 32px rgba(45,90,27,0.12);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.25s,transform 0.25s;z-index:300;"></div>
+<button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
+</body>
+</html>
