@@ -282,8 +282,8 @@
 </div>
 <footer style="border-top:1px solid rgba(0,0,0,0.07);padding:40px 20px 120px;text-align:center;">
   <p style="font-size:13px;font-weight:600;color:#fff;margin:0 0 8px;font-family:'Inter',sans-serif;">Made by a Pikmin Bloom fan with love &nbsp;&nbsp;🌱</p>
-  <p style="font-size:12px;color:#7da377;line-height:1.6;margin:10px 0 0;font-family:'Inter',sans-serif;">This web app is not affiliated with Niantic or Nintendo.</p>
-  <p style="font-size:12px;color:#7da377;margin:6px 0 0;font-family:'Inter',sans-serif;">Illustration by <a href="https://nawmin.stores.jp" target="_blank" rel="noopener" style="color:#7da377;text-decoration:underline;text-underline-offset:2px;">nawmin</a></p>
+  <p style="font-size:12px;color:#3b7c31;line-height:1.6;margin:10px 0 0;font-family:'Inter',sans-serif;">Found a bug or have a suggestion? <a href="https://github.com/purrrequest/PikGarden/issues" target="_blank" rel="noopener" style="color:#3b7c31;text-decoration:underline;text-underline-offset:2px;">Open an issue on GitHub.</a></p>
+  <p style="font-size:12px;color:#7da377;line-height:1.6;margin:10px 0 0;font-family:'Inter',sans-serif;">This web app is not affiliated with Niantic or Nintendo. Illustration by <a href="https://nawmin.stores.jp" target="_blank" rel="noopener" style="color:#7da377;text-decoration:underline;text-underline-offset:2px;">nawmin</a>.</p>
 </footer>
 
 <script>
@@ -656,7 +656,7 @@ function startListSpinner(spinnerId,label){
   const frames=['◐','◓','◑','◒'];let i=0;
   function tick(){
     const el=document.getElementById(spinnerId);
-    if(el){el.textContent=frames[i%4]+' '+label;i++;}
+    if(el){el.innerHTML=frames[i%4]+' '+label+' <span style="font-size:12px;font-weight:400;color:#94a88e;">This may take 10–30 seconds 🌿</span>';i++;}
   }
   tick();
   listSpinnerTimer=setInterval(tick,120);
@@ -675,7 +675,7 @@ function retryOverpassLoad(listId,decorId){
   const decor=findDecor(decorId);
   const el=document.getElementById(listId);
   if(!decor||!el||!userCoords)return;
-  el.innerHTML=`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby…</li>`;
+  el.innerHTML=`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby… <span style="font-size:12px;font-weight:400;color:#94a88e;">This may take 10–30 seconds 🌿</span></li>`;
   loadOverpassIntoList(listId,decor);
 }
 const retryLabels=['Trying once more…','One last try…'];
@@ -833,7 +833,7 @@ function renderDetailContent(containerId,id){
   const noteHtml=d.note?`<li style="font-size:14px;color:#888;padding:16px 0;list-style:none;">${d.note}</li>`:null;
   const noLocationHtml=`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/tree-trunk.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#94a88e;margin:0 0 10px;">No location set yet.</p><p style="font-size:11px;color:#94a88e;line-height:1.6;margin:0;">Tap <a href="#" onclick="useMyLocation();return false;" style="color:#94a88e;text-decoration:underline;text-underline-offset:2px;">Use My Location</a> at the top to find spots near you.</p></li>`;
   const nothingNearbyHtml=`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/wind.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#94a88e;margin:0 0 10px;">Nothing nearby.</p><p style="font-size:11px;color:#94a88e;line-height:1.6;margin:0;">Try moving to a different area or <a href="#" onclick="useMyLocation();return false;" style="color:#94a88e;text-decoration:underline;text-underline-offset:2px;">updating your location</a>.</p></li>`;
-  const loadingHtml=useOverpass&&!cached?`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby…</li>`:cached&&cachedData.length===0?nothingNearbyHtml:initialLocs.map(renderLocItem).join('');
+  const loadingHtml=useOverpass&&!cached?`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby… <span style="font-size:12px;font-weight:400;color:#94a88e;">This may take 10–30 seconds 🌿</span></li>`:cached&&cachedData.length===0?nothingNearbyHtml:initialLocs.map(renderLocItem).join('');
   const locsHtml=noteHtml?noteHtml:isExclusive?exclusiveHtml:(!userCoords&&!d.skipOverpass)?noLocationHtml:loadingHtml;
   document.getElementById(containerId).innerHTML=`
     <div class="detail-header"><span class="detail-icon">${d.icon}</span><div><div class="detail-name">${d.name} Pikmin</div><div class="detail-subtitle">Wears: ${d.wear}${progressNote}</div></div></div>
