@@ -122,7 +122,6 @@
   .accordion-body.celebrate-close { transition:grid-template-rows 1.4s cubic-bezier(0.4,0,0.2,1) !important; }
   .accordion-body-inner { min-height:0; }
   .accordion-body-inner-pad { padding:30px 35px 36px 40px; border-top:1px solid #ddeedd; }
-  .accordion-body.roadside-body .accordion-body-inner-pad { border-top:none; }
   @keyframes btnEntrance { from { transform:translateY(6px); opacity:0; } to { transform:translateY(0); opacity:1; } }
   @keyframes cardHighlight { 0% { background:#fff; transform:scale(1); box-shadow:0 4px 16px rgba(0,0,0,0.07); } 30% { background:#fff; transform:scale(1.1); box-shadow:12px 20px 64px rgba(0,0,0,0.5); } 100% { background:#fff; transform:scale(1); box-shadow:0 4px 16px rgba(0,0,0,0.07); } }
   .card-highlight { animation: cardHighlight 1.8s cubic-bezier(0.22,1,0.36,1) both; }
@@ -135,7 +134,7 @@
   .color-cell.collected img { opacity:1; }
   .color-cell:hover { transform:scale(1.1); }
   .sub-tabs { display:flex; gap:40px; justify-content:center; margin-bottom:20px; border-bottom:1px solid #b8d0ac; padding-bottom:0; }
-  .finder-filter-tabs { display:none; }
+  .finder-filter-tabs { display:flex; }
   .sub-tab { font-size:14px; font-weight:500; color:#7a8c77; background:none; border:none; border-bottom:2px solid transparent; padding:6px 0 8px; margin-bottom:-1px; cursor:pointer; font-family:'Inter',sans-serif; transition:color 0.15s,border-color 0.15s; }
   .sub-tab.active { color:#2d5a1b; border-bottom-color:#2d5a1b; }
   .sub-tab:hover:not(.active) { color:#5a6e57; }
@@ -152,10 +151,21 @@
   .rare-row-locked { opacity:0.3; pointer-events:none; }
   .letter-grid { margin-top:30px; padding-top:30px; border-top:1px solid #edf2eb; }
   .letter-grid-header { font-size:11px; font-weight:500; color:#5a6e57; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
-  .letter-row { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
-  .letter-label { font-size:12px; font-weight:700; color:#555555; width:14px; flex-shrink:0; font-family:'Inter',sans-serif; }
+  .letter-row { display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-bottom:16px; }
+  .letter-label { font-size:12px; font-weight:700; color:#555555; font-family:'Inter',sans-serif; }
+  .sticker-color-row { display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-bottom:16px; }
+  .sc-sticker-label { font-size:10px; font-weight:500; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-family:'Inter',sans-serif; }
+  .sc-sticker-label.green { background:#c8ecd0; color:#2a7a40; }
+  .sc-sticker-label.blue { background:#bdd6f0; color:#1a4f8a; }
+  .sc-sticker-label.orange { background:#f5d0a8; color:#b84a10; }
+  .letter-grid { margin-top:0; padding-top:0; border-top:none; }
   .rare-badge { font-size:11px; background:#f2eafa; color:#826ab1; border-radius:4px; padding:1px 5px; margin-left:4px; font-weight:500; letter-spacing:0.3px; vertical-align:middle; }
   .done-badge { font-size:11px; background:#c8f0d4; color:#1a6e35; border-radius:4px; padding:1px 5px; margin-left:12px; font-weight:500; letter-spacing:0.3px; vertical-align:middle; }
+  .mark-all-row { display:flex; justify-content:flex-end; margin-top:19px; padding-top:10px; border-top:1px solid rgba(170,196,158,0.3); }
+  .coming-soon-msg { font-size:13px; color:#7a8c77; font-style:italic; padding:4px 0 2px; }
+  .mark-all-btn { font-size:12px; color:#7a8c77; background:none; border:none; cursor:pointer; padding:0; font-family:'Inter',sans-serif; text-decoration:underline; text-underline-offset:3px; transition:opacity 0.15s; }
+  .mark-all-btn:hover { opacity:0.65; }
+  .toast-undo { background:none; border:none; cursor:pointer; font-size:13px; font-family:'Inter',sans-serif; font-weight:600; color:#2d5a1b; text-decoration:underline; text-underline-offset:3px; padding:0; margin-left:10px; }
 
   .retry-btn { display:inline-flex; align-items:center; gap:8px; font-size:15px; color:#fff; background:#d4943a; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; font-family:'Inter',sans-serif; font-weight:500; transition:background 0.15s; }
   .retry-btn:hover { background:#be7f28; }
@@ -332,48 +342,55 @@
 // 4. Move to Claude Code for further development
 
 const decors = [
-  { id:'restaurant', name:'Restaurant', icon:'🍽️', wear:'Chef hat', rareVariants:['★ Rare'], locations:[{name:'Applebee\'s Fremont',type:'Chain restaurant',lat:37.5485,lng:-121.9886},{name:'Olive Garden Newark',type:'Chain restaurant',lat:37.5295,lng:-122.0402},{name:'Cheesecake Factory',type:'Restaurant',lat:37.5630,lng:-121.9763}], tags:['amenity=restaurant','amenity=fast_food'], tip:'Almost any sit-down restaurant or fast food spot counts. One of the most common decors to find.' },
-  { id:'cafe', name:'Café', icon:'☕', wear:'Coffee cup', rareVariants:['★ Rare'], searchTerms:['cafe','café','coffee'], locations:[{name:'Starbucks Fremont Blvd',type:'Coffee chain',lat:37.5485,lng:-121.9800},{name:'Peet\'s Coffee Fremont',type:'Coffee chain',lat:37.5500,lng:-121.9870},{name:'Blue Bottle Coffee Oakland',type:'Coffee shop',lat:37.8044,lng:-122.2712}], tags:['amenity=cafe'], tip:'Any coffee shop works, as long as it primarily serves coffee. Major chains and independent cafés both count.' },
-  { id:'sweetshop', name:'Sweetshop', icon:'🍬', wear:'Macaron / Donut', locations:[{name:'Nothing Bundt Cakes Fremont',type:'Bakery',lat:37.5532,lng:-121.9887},{name:'See\'s Candies Newpark Mall',type:'Candy store',lat:37.5284,lng:-122.0388},{name:'Local bakery or patisserie',type:'Any bakery',lat:37.5485,lng:-121.9886}], tags:['shop=confectionery','shop=pastry'], tip:'Look for dedicated candy shops, chocolate stores, or pastry boutiques. Regular cafés with pastries don\'t always qualify.' },
-  { id:'movietheater', name:'Movie theater', icon:'🎬', wear:'Popcorn snack', locations:[{name:'AMC NewPark 12',type:'Cinema, Newark',lat:37.5270,lng:-122.0413},{name:'Regal Hacienda Crossings',type:'Cinema, Dublin',lat:37.7059,lng:-121.9020},{name:'Century 20 Daly City',type:'Cinema, Daly City',lat:37.6879,lng:-122.4702}], tags:['amenity=cinema'], tip:'Must be at the cinema building itself. The parking lot or nearby streets won\'t count.' },
-  { id:'pharmacy', name:'Pharmacy', icon:'💊', wear:'Toothbrush', locations:[{name:'CVS Pharmacy Fremont',type:'Pharmacy chain',lat:37.5490,lng:-121.9880},{name:'Walgreens Mission Blvd',type:'Pharmacy chain',lat:37.5477,lng:-121.9798},{name:'Rite Aid Fremont',type:'Pharmacy chain',lat:37.5502,lng:-121.9850}], tags:['amenity=pharmacy'], tip:'Drugstore chains and standalone pharmacies work reliably.' },
-  { id:'zoo', name:'Zoo', icon:'🦁', wear:'Dandelion', locations:[{name:'Oakland Zoo',type:'Zoo, Oakland',lat:37.7654,lng:-122.1598},{name:'San Francisco Zoo',type:'Zoo, San Francisco',lat:37.7325,lng:-122.5026},{name:'Aquarium of the Bay',type:'Aquarium, San Francisco',lat:37.8085,lng:-122.4101}], tags:['tourism=zoo'], tip:'Zoos and aquariums both count. Wildlife sanctuaries may also work.' },
-  { id:'forest', name:'Forest', icon:'🌲', wear:'Stag Beetle / Acorn', locations:[{name:'Coyote Hills Regional Park',type:'Regional park, Fremont',lat:37.5579,lng:-122.0641},{name:'Tilden Regional Park',type:'Regional park, Berkeley',lat:37.8966,lng:-122.2417},{name:'Redwood Regional Park',type:'Regional park, Oakland',lat:37.8074,lng:-122.1571}], tags:['landuse=forest','natural=wood'], tip:'Large wooded areas only — small neighborhood parks usually won\'t count. Head to a proper forest or nature reserve.' },
-  { id:'waterside', name:'Waterside', icon:'🎣', wear:'Fishing lure', rareVariants:['★ Rare'], locations:[{name:'Lake Elizabeth',type:'Lake, Fremont',lat:37.5351,lng:-121.9757},{name:'Coyote Creek Trail',type:'Creekside trail',lat:37.5200,lng:-121.9600},{name:'San Francisco Bay Trail',type:'Bay waterfront',lat:37.5580,lng:-122.0600}], tags:['natural=water','waterway=river'], tip:'Walk along any lake, river, or creek. The bigger the body of water, the more reliably it counts.' },
-  { id:'postoffice', name:'Post office', icon:'📮', wear:'Stamp', locations:[{name:'USPS Fremont Main Post Office',type:'Post office',lat:37.5481,lng:-121.9885},{name:'USPS Newark Post Office',type:'Post office',lat:37.5290,lng:-122.0418}], tags:['amenity=post_office'], tip:'Only official government post offices — not private shipping stores or mailboxes.' },
-  { id:'artgallery', name:'Art Gallery', icon:'🖼️', wear:'Painting frame', locations:[{name:'Oakland Museum of California',type:'Museum, Oakland',lat:37.7985,lng:-122.2650},{name:'SFMOMA',type:'Art museum, San Francisco',lat:37.7857,lng:-122.4011},{name:'de Young Museum',type:'Art museum, San Francisco',lat:37.7714,lng:-122.4685}], tags:['tourism=gallery','tourism=museum'], tip:'Art museums and smaller galleries both work. Any space dedicated to displaying art should qualify.' },
-  { id:'airport', name:'Airport', icon:'✈️', wear:'Toy airplane', locations:[{name:'Oakland International (OAK)',type:'International airport',lat:37.7213,lng:-122.2208},{name:'San Jose International (SJC)',type:'International airport',lat:37.3639,lng:-121.9289},{name:'San Francisco International (SFO)',type:'International airport',lat:37.6213,lng:-122.3790}], tags:['aeroway=aerodrome'], tip:'Must be inside or right outside a terminal building. Parking lots and nearby roads won\'t count.' },
-  { id:'station', name:'Station', icon:'🚆', wear:'Paper train / Ticket / Gold Ticket', locations:[{name:'Fremont BART Station',type:'BART station',lat:37.5573,lng:-121.9761},{name:'Union City BART Station',type:'BART station',lat:37.5913,lng:-122.0175},{name:'Warm Springs BART Station',type:'BART station',lat:37.5021,lng:-121.9396}], tags:['railway=station'], tip:'Train, metro, and subway stations all work. Bus stops are tracked separately as their own decor type.' },
-  { id:'beach', name:'Beach', icon:'🐚', wear:'Shell', locations:[{name:'Crown Memorial State Beach',type:'Beach, Alameda',lat:37.7639,lng:-122.2869},{name:'Crissy Field Beach',type:'Beach, San Francisco',lat:37.8036,lng:-122.4681},{name:'Half Moon Bay State Beach',type:'Beach, Half Moon Bay',lat:37.4635,lng:-122.4385}], tags:['natural=beach'], tip:'Only sandy beaches qualify — rocky shorelines and bay fronts often don\'t. Look for proper named beaches.' },
-  { id:'burgerplace', name:'Burger Place', icon:'🍔', wear:'Burger', locations:[{name:'In-N-Out Burger Fremont',type:'Burger chain',lat:37.5502,lng:-121.9852},{name:'Five Guys Newark',type:'Burger chain',lat:37.5273,lng:-122.0420},{name:'Shake Shack Union Square SF',type:'Burger chain, San Francisco',lat:37.7879,lng:-122.4075}], tags:['amenity=fast_food'], tip:'Burger-focused fast food spots. Generic fast food chains that serve many cuisines may not always count.' },
-  { id:'minimart', name:'Corner store', icon:'🏪', wear:'Bottle cap / Snack', locations:[{name:'7-Eleven Fremont Blvd',type:'Convenience store',lat:37.5488,lng:-121.9882},{name:'ampm Fremont',type:'Convenience store',lat:37.5501,lng:-121.9855},{name:'Circle K Newark',type:'Convenience store',lat:37.5295,lng:-122.0400}], tags:['shop=convenience'], tip:'Look for convenience stores and small corner shops. Not every small grocery qualifies.' },
-  { id:'supermarket', name:'Supermarket', icon:'🛒', wear:'Mushroom / Banana', rareVariants:['★ Banana Rare'], locations:[{name:'Safeway Fremont',type:'Supermarket chain',lat:37.5491,lng:-121.9883},{name:'Whole Foods Market Fremont',type:'Supermarket chain',lat:37.5532,lng:-121.9887},{name:'Trader Joe\'s Newark',type:'Supermarket chain',lat:37.5290,lng:-122.0392}], tags:['shop=supermarket'], tip:'Large grocery supermarkets work reliably. Small corner grocers usually don\'t qualify.' },
-  { id:'bakery', name:'Bakery', icon:'🥖', wear:'Baguette', rareVariants:['★ Rare'], locations:[{name:'Boudin Bakery Fremont Hub',type:'Bakery chain',lat:37.5496,lng:-121.9884},{name:'La Farine Bakery Oakland',type:'Bakery, Oakland',lat:37.8123,lng:-122.2155},{name:'Acme Bread Company Berkeley',type:'Artisan bakery',lat:37.8693,lng:-122.2686}], tags:['shop=bakery'], tip:'Dedicated bread or pastry bakeries. Café-bakery combos sometimes count but not always.' },
-  { id:'hairsalon', name:'Hair salon', icon:'✂️', wear:'Scissors', rareVariants:['★ Rare'], locations:[{name:'Great Clips Fremont',type:'Hair salon chain',lat:37.5492,lng:-121.9883},{name:'Supercuts Fremont',type:'Hair salon chain',lat:37.5480,lng:-121.9870},{name:'Sport Clips Fremont',type:'Barbershop chain',lat:37.5498,lng:-121.9890}], tags:['shop=hairdresser','shop=beauty'], tip:'One of the easiest to find — almost every neighborhood has one. Any hair salon or barbershop counts.' },
-  { id:'clothesstore', name:'Clothes Store', icon:'👗', wear:'Hair tie', locations:[{name:'H&M Newpark Mall',type:'Clothing chain, Newark',lat:37.5278,lng:-122.0408},{name:'Zara Stanford Shopping Center',type:'Clothing chain, Palo Alto',lat:37.4436,lng:-122.1708},{name:'Uniqlo Union Square SF',type:'Clothing chain, San Francisco',lat:37.7878,lng:-122.4065}], tags:['shop=clothes'], tip:'Any clothing store works. Large fashion chains are the most reliable.' },
-  { id:'park', name:'Park', icon:'🌿', wear:'Clover / Four-leaf clover', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'], rareVariants:['★ Clover Rare','★ Four-leaf Rare'], locations:[{name:'Central Park Fremont',type:'City park',lat:37.5509,lng:-121.9863},{name:'Lake Merritt',type:'Urban park, Oakland',lat:37.7993,lng:-122.2596},{name:'Dolores Park',type:'City park, San Francisco',lat:37.7596,lng:-122.4269}], tags:['leisure=park'], tip:'Must be a proper named park. Small green strips, plazas, or traffic islands usually don\'t qualify.' },
-  { id:'library', name:'Library', icon:'📚', wear:'Tiny book', locations:[{name:'Fremont Main Library',type:'Public library',lat:37.5481,lng:-121.9887},{name:'Oakland Public Library Main Branch',type:'Public library, Oakland',lat:37.8044,lng:-122.2712},{name:'Berkeley Public Library Central',type:'Public library, Berkeley',lat:37.8693,lng:-122.2686}], tags:['amenity=library'], tip:'Any public library branch works reliably.' },
-  { id:'sushirestaurant', name:'Sushi Restaurant', icon:'🍣', wear:'Sushi', locations:[{name:'Sushi Sam\'s Fremont',type:'Sushi restaurant',lat:37.5488,lng:-121.9881},{name:'Ozumo Restaurant Oakland',type:'Sushi restaurant, Oakland',lat:37.7945,lng:-122.2770},{name:'Akikos Sushi San Francisco',type:'Sushi restaurant, San Francisco',lat:37.7879,lng:-122.4001}], tags:['cuisine=sushi'], tip:'Any sushi restaurant works. Sushi counters inside grocery stores may not qualify.' },
-  { id:'mountain', name:'Mountain', icon:'⛰️', wear:'Mountain pin badge', locations:[{name:'Mission Peak Regional Preserve',type:'Peak, Fremont',lat:37.5126,lng:-121.8802},{name:'Mt. Tamalpais State Park',type:'Peak, Marin County',lat:37.9235,lng:-122.5975},{name:'Mt. Diablo State Park',type:'Peak, Contra Costa',lat:37.8816,lng:-121.9143}], tags:['natural=peak'], tip:'Must be near an actual named peak or summit. General hiking trails alone may not count.' },
-  { id:'stadium', name:'Stadium', icon:'🏟️', wear:'Ball keychain', locations:[{name:'Oracle Park',type:'Baseball stadium, San Francisco',lat:37.7786,lng:-122.3893},{name:'SAP Center',type:'Arena, San Jose',lat:37.3326,lng:-121.9010},{name:'PayPal Park',type:'Soccer stadium, San Jose',lat:37.3513,lng:-121.9253}], tags:['leisure=stadium'], tip:'Large sports stadiums and arenas both work. College stadiums may also qualify.' },
+  { id:'restaurant', name:'Restaurant', icon:'🍽️', wear:'Chef hat', rareVariants:['★ Rare'], tags:['amenity=restaurant'], tip:'Almost any sit-down restaurant or fast food spot counts. One of the most common decors to find.' },
+  { id:'cafe', name:'Café', icon:'☕', wear:'Coffee cup', rareVariants:['★ Rare'], searchTerms:['cafe','café','coffee'], tags:['amenity=cafe','cuisine=coffee_shop'], tip:'Any coffee shop works, as long as it primarily serves coffee. Major chains and independent cafés both count.' },
+  { id:'sweetshop', name:'Sweetshop', icon:'🍬', wear:'Macaron / Donut', tags:['shop=confectionery','shop=pastry'], tip:'Look for dedicated candy shops, chocolate stores, or pastry boutiques. Regular cafés with pastries don\'t always qualify.' },
+  { id:'movietheater', name:'Movie theater', icon:'🎬', wear:'Popcorn snack', tags:['amenity=cinema'], tip:'Must be at the cinema building itself. The parking lot or nearby streets won\'t count.' },
+  { id:'pharmacy', name:'Pharmacy', icon:'💊', wear:'Toothbrush', tags:['amenity=pharmacy'], tip:'Drugstore chains and standalone pharmacies work reliably.' },
+  { id:'zoo', name:'Zoo', icon:'🦁', wear:'Dandelion', tags:['tourism=zoo'], tip:'Zoos and aquariums both count. Wildlife sanctuaries may also work.' },
+  { id:'forest', name:'Forest', icon:'🌲', wear:'Stag Beetle / Acorn', tags:['landuse=forest','natural=wood'], tip:'Large wooded areas only — small neighborhood parks usually won\'t count. Head to a proper forest or nature reserve.' },
+  { id:'waterside', name:'Waterside', icon:'🎣', wear:'Fishing lure', rareVariants:['★ Rare'], tags:['waterway=river','waterway=canal','natural=water'], tip:'Walk along any lake, river, or creek. The bigger the body of water, the more reliably it counts.' },
+  { id:'postoffice', name:'Post office', icon:'📮', wear:'Stamp', tags:['amenity=post_office'], tip:'Only official government post offices — not private shipping stores or mailboxes.' },
+  { id:'artgallery', name:'Art Gallery', icon:'🖼️', wear:'Painting frame', tags:['tourism=gallery','shop=art','tourism=museum'], tip:'Art museums and smaller galleries both work. Any space dedicated to displaying art should qualify.' },
+  { id:'airport', name:'Airport', icon:'✈️', wear:'Toy airplane', tags:['aeroway=aerodrome'], tip:'Must be inside or right outside a terminal building. Parking lots and nearby roads won\'t count.' },
+  { id:'station', name:'Station', icon:'🚆', wear:'Paper train / Ticket / Gold Ticket', tags:['railway=station','building=train_station'], tip:'Train, metro, and subway stations all work. Bus stops are tracked separately as their own decor type.' },
+  { id:'beach', name:'Beach', icon:'🐚', wear:'Shell', tags:['natural=beach'], tip:'Only sandy beaches qualify — rocky shorelines and bay fronts often don\'t. Look for proper named beaches.' },
+  { id:'burgerplace', name:'Burger Place', icon:'🍔', wear:'Burger', tags:['amenity=fast_food','cuisine=burger'], tip:'Burger-focused fast food spots. Generic fast food chains that serve many cuisines may not always count.' },
+  { id:'minimart', name:'Corner store', icon:'🏪', wear:'Bottle cap / Snack', tags:['shop=convenience'], tip:'Look for convenience stores and small corner shops. Not every small grocery qualifies.' },
+  { id:'supermarket', name:'Supermarket', icon:'🛒', wear:'Mushroom / Banana', rareVariants:['★ Banana Rare'], tags:['shop=supermarket'], tip:'Large grocery supermarkets work reliably. Small corner grocers usually don\'t qualify.' },
+  { id:'bakery', name:'Bakery', icon:'🥖', wear:'Baguette', rareVariants:['★ Rare'], tags:['shop=bakery','cuisine=pretzel','cuisine=bagel'], tip:'Dedicated bread or pastry bakeries. Café-bakery combos sometimes count but not always.' },
+  { id:'hairsalon', name:'Hair salon', icon:'✂️', wear:'Scissors', rareVariants:['★ Rare'], tags:['shop=hairdresser'], tip:'One of the easiest to find — almost every neighborhood has one. Any hair salon or barbershop counts.' },
+  { id:'clothesstore', name:'Clothes Store', icon:'👗', wear:'Hair tie', tags:['shop=clothes','shop=shoes'], tip:'Any clothing store works. Large fashion chains are the most reliable.' },
+  { id:'park', name:'Park', icon:'🌿', wear:'Clover / Four-leaf clover', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'], rareVariants:['★ Clover Rare','★ Four-leaf Rare'], tags:['leisure=park'], tip:'Must be a proper named park. Small green strips, plazas, or traffic islands usually don\'t qualify.' },
+  { id:'library', name:'Library', icon:'📚', wear:'Tiny book', tags:['amenity=library','shop=books'], tip:'Any public library branch works reliably.' },
+  { id:'sushirestaurant', name:'Sushi Restaurant', icon:'🍣', wear:'Sushi', tags:['cuisine=sushi'], tip:'Any sushi restaurant works. Sushi counters inside grocery stores may not qualify.' },
+  { id:'mountain', name:'Mountain', icon:'⛰️', wear:'Mountain pin badge', tags:['natural=peak'], tip:'Must be near an actual named peak or summit. General hiking trails alone may not count.' },
+  { id:'stadium', name:'Stadium', icon:'🏟️', wear:'Ball keychain', tags:['leisure=stadium'], tip:'Large sports stadiums and arenas both work. College stadiums may also qualify.' },
   { id:'rainy', name:'Rainy Day', icon:'🌧️', wear:'Rain Hood / Taro Leaf / Tilted Leaf', colors:['Blue'], skipOverpass:true, note:'Only available outdoors during rainy weather.', locations:[], tags:[], tip:'⚠️ Weather-dependent. Appears during rainy weather — the in-game weather may not always match real-world conditions.' },
   { id:'snowy', name:'Snowy Day', icon:'❄️', wear:'Snow', colors:['Blue','White','Ice'], skipOverpass:true, note:'Only available outdoors during snowy weather.', locations:[], tags:[], tip:'⚠️ Weather-dependent. Appears during snowfall — the in-game weather may not always match real-world conditions.' },
-  { id:'themepark', name:'Theme Park', icon:'🎢', wear:'Theme park ticket', locations:[{name:'California\'s Great America',type:'Theme park, Santa Clara',lat:37.3970,lng:-121.9745},{name:'Bonfante Gardens (Gilroy Gardens)',type:'Theme park, Gilroy',lat:37.0140,lng:-121.5729},{name:'Six Flags Discovery Kingdom',type:'Theme park, Vallejo',lat:38.1371,lng:-122.2346}], tags:['tourism=theme_park'], tip:'Must be inside or at the entrance of the park. Nearby parking lots won\'t count.' },
-  { id:'busstop', name:'Bus Stop', icon:'🚌', wear:'Bus papercraft', locations:[{name:'AC Transit Stop — Fremont Blvd',type:'Bus stop, Fremont',lat:37.5485,lng:-121.9886},{name:'AC Transit Stop — International Blvd Oakland',type:'Bus stop, Oakland',lat:37.7901,lng:-122.2134},{name:'Muni Bus Stop — Market & Powell SF',type:'Bus stop, San Francisco',lat:37.7840,lng:-122.4085}], tags:['highway=bus_stop'], tip:'Very common — almost any named bus stop on the street counts.' },
-  { id:'italianrestaurant', name:'Italian Restaurant', icon:'🍕', wear:'Pizza / Pasta', locations:[{name:'Primavera Ristorante Fremont',type:'Italian restaurant',lat:37.5494,lng:-121.9879},{name:'Oliveto Restaurant Oakland',type:'Italian restaurant, Oakland',lat:37.8110,lng:-122.2495},{name:'Cotogna San Francisco',type:'Italian restaurant, San Francisco',lat:37.7970,lng:-122.4057}], tags:['cuisine=pizza','cuisine=italian'], tip:'Any Italian restaurant or pizzeria. Most Italian-named eateries qualify.' },
-  { id:'ramenrestaurant', name:'Ramen Restaurant', icon:'🍜', wear:'Ramen keychain', locations:[{name:'Ramen Izakaya Yu Fremont',type:'Ramen restaurant',lat:37.5490,lng:-121.9875},{name:'Mensho Tokyo San Francisco',type:'Ramen restaurant, San Francisco',lat:37.7826,lng:-122.4162},{name:'Sapporo-Ya Ramen Japantown SF',type:'Ramen restaurant, San Francisco',lat:37.7851,lng:-122.4307}], tags:['cuisine=ramen'], tip:'Any dedicated ramen shop. Japanese noodle restaurants often count too.' },
-  { id:'bridge', name:'Bridge', icon:'🌉', wear:'Bridge pin badge', locations:[{name:'Golden Gate Bridge',type:'Bridge, San Francisco',lat:37.8199,lng:-122.4783},{name:'Bay Bridge (Oakland side)',type:'Bridge, Oakland',lat:37.8044,lng:-122.2712},{name:'Dumbarton Bridge',type:'Bridge, Fremont/Newark',lat:37.5085,lng:-122.1178}], tags:['bridge=yes'], tip:'Must be on or right next to a bridge. Small footbridges can count too.' },
-  { id:'hotel', name:'Hotel', icon:'🏨', wear:'Hotel amenities', locations:[{name:'Hyatt Place Fremont',type:'Hotel, Fremont',lat:37.5499,lng:-121.9856},{name:'Marriott Oakland City Center',type:'Hotel, Oakland',lat:37.8044,lng:-122.2712},{name:'Union Square Hotels',type:'Hotel district, San Francisco',lat:37.7880,lng:-122.4075}], tags:['tourism=hotel'], tip:'Any hotel works — from small guesthouses to large chains.' },
-  { id:'makeupstore', name:'Makeup Store', icon:'💄', wear:'Makeup', locations:[{name:'Sephora Newpark Mall',type:'Cosmetics store, Newark',lat:37.5278,lng:-122.0408},{name:'Ulta Beauty Fremont',type:'Beauty store, Fremont',lat:37.5498,lng:-121.9888},{name:'Sephora Union Square SF',type:'Cosmetics store, San Francisco',lat:37.7878,lng:-122.4067}], tags:['shop=department_store'], tip:'Dedicated cosmetics stores work best. Department store beauty counters may not always count.' },
+  { id:'themepark', name:'Theme Park', icon:'🎢', wear:'Theme park ticket', tags:['tourism=theme_park'], tip:'Must be inside or at the entrance of the park. Nearby parking lots won\'t count.' },
+  { id:'busstop', name:'Bus Stop', icon:'🚌', wear:'Bus papercraft', tags:['highway=bus_stop'], tip:'Very common — almost any named bus stop on the street counts.' },
+  { id:'italianrestaurant', name:'Italian Restaurant', icon:'🍕', wear:'Pizza / Pasta', tags:['cuisine=pizza','cuisine=italian','cuisine=pasta'], tip:'Any Italian restaurant or pizzeria. Most Italian-named eateries qualify.' },
+  { id:'ramenrestaurant', name:'Ramen Restaurant', icon:'🍜', wear:'Ramen keychain', tags:['cuisine=ramen','cuisine=noodle','cuisine=soba','cuisine=udon','cuisine=chinese'], tip:'Any dedicated ramen shop. Japanese noodle restaurants often count too.' },
+  { id:'bridge', name:'Bridge', icon:'🌉', wear:'Bridge pin badge', tags:['bridge=yes'], tip:'Must be on or right next to a bridge. Small footbridges can count too.' },
+  { id:'hotel', name:'Hotel', icon:'🏨', wear:'Hotel amenities', tags:['tourism=hotel'], tip:'Any hotel works — from small guesthouses to large chains.' },
+  { id:'makeupstore', name:'Makeup Store', icon:'💄', wear:'Makeup', tags:['shop=department_store','shop=cosmetics','amenity=pharmacy'], tip:'Dedicated cosmetics stores work best. Department store beauty counters may not always count.' },
   { id:'shrinestemples', name:'Shrines and Temples', icon:'⛩️', wear:'Fortune', variants:['Fortune (Very Lucky)','Fortune (Lucky)','Fortune (Pretty Lucky)','Fortune (A Little Lucky)','Fortune (Future Luck)'], exclusive:'Japan', locations:[], tags:['amenity=place_of_worship'], tip:'⚠️ Japan exclusive. Only available near shrines and temples in Japan — not accessible in other countries.' },
-  { id:'appliancesstore', name:'Appliances Store', icon:'🔌', wear:'Battery / Fairy Lights', variants:['D Battery (Red-Yellow)','D Battery (Silver-Blue)','D Battery (Green-Silver)','AAA Battery (Red-Yellow)','AAA Battery (Silver-Blue)','AAA Battery (Green-Silver)','Light Bulb','Colorful String Lights'], locations:[{name:'Best Buy Fremont',type:'Electronics & appliances store',lat:37.5501,lng:-121.9856},{name:'Best Buy Emeryville',type:'Electronics & appliances store, Emeryville',lat:37.8353,lng:-122.2922},{name:'P.C. Richard & Son — no Bay Area; use Best Buy',type:'Appliances store',lat:37.5501,lng:-121.9856}], tags:['shop=appliance'], tip:'Large electronics and appliance stores work reliably. Not all home goods stores count.' },
-  { id:'curryrestaurant', name:'Curry Restaurant', icon:'🍛', wear:'Curry bowl', locations:[{name:'Curry House Fremont',type:'Curry restaurant',lat:37.5492,lng:-121.9878},{name:'Vik\'s Chaat Berkeley',type:'Indian restaurant, Berkeley',lat:37.8628,lng:-122.2865},{name:'Dosa on Fillmore SF',type:'South Indian restaurant, San Francisco',lat:37.7858,lng:-122.4308}], tags:['cuisine=curry','cuisine=indian'], tip:'Indian, Thai, and other curry-focused restaurants all qualify.' },
-  { id:'diystore', name:'DIY Store', icon:'🔧', wear:'Tool', locations:[{name:'Home Depot Fremont',type:'DIY store chain',lat:37.5422,lng:-121.9903},{name:'Lowe\'s Newark',type:'DIY store chain',lat:37.5238,lng:-122.0397},{name:'Orchard Supply Hardware San Jose',type:'Hardware store',lat:37.3382,lng:-121.8863}], tags:['shop=doityourself'], tip:'Large hardware or home improvement stores work best. Small local hardware shops may not always qualify.' },
-  { id:'university', name:'University', icon:'🎓', wear:'College crest patch', locations:[{name:'UC Berkeley',type:'University, Berkeley',lat:37.8724,lng:-122.2595},{name:'Stanford University',type:'University, Palo Alto',lat:37.4275,lng:-122.1697},{name:'San Jose State University',type:'University, San Jose',lat:37.3352,lng:-121.8811}], tags:['amenity=university'], tip:'Must be on a university or college campus.' },
-  { id:'mexicanrestaurant', name:'Mexican Restaurant', icon:'🌮', wear:'Taco', locations:[{name:'Tacos El Grullense Fremont',type:'Mexican restaurant',lat:37.5480,lng:-121.9882},{name:'La Palma Mexicatessen Fruitvale Oakland',type:'Mexican restaurant, Oakland',lat:37.7658,lng:-122.2241},{name:'Nopalito San Francisco',type:'Mexican restaurant, San Francisco',lat:37.7813,lng:-122.4399}], tags:['cuisine=mexican'], tip:'Any Mexican restaurant or taqueria works.' },
-  { id:'laundromat', name:'Laundromat', icon:'🧺', wear:'Laundry item', locations:[{name:'Laundry World Fremont',type:'Laundromat',lat:37.5488,lng:-121.9875},{name:'Wash Club Oakland',type:'Laundromat, Oakland',lat:37.8012,lng:-122.2698},{name:'Brain Wash Cafe & Laundromat SF',type:'Laundromat, San Francisco',lat:37.7726,lng:-122.4104}], tags:['shop=laundry'], tip:'Self-service coin laundromats work. Dry cleaners may not always qualify.' },
-  { id:'koreanrestaurant', name:'Korean Restaurant', icon:'🍱', wear:'Kimchi', locations:[{name:'OB Bear Restaurant',type:'Korean restaurant, Oakland',lat:37.8044,lng:-122.2591},{name:'Ohgane Korean BBQ',type:'Korean BBQ, Oakland',lat:37.7985,lng:-122.2140},{name:'Hanul Korean Restaurant',type:'Korean restaurant, Fremont',lat:37.5499,lng:-121.9880}], tags:['cuisine=korean'], tip:'Any Korean restaurant works. Korean BBQ spots are a reliable option.' },
-  { id:'roadside', name:'Roadside', icon:'🪧', wear:'Coin / Sticker', skipOverpass:true, note:'Basically everywhere you walk outside.<br>These little ones show up wherever your feet take you! 🚶', category:'roadside', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'], rareVariants:['★ Rare'], letterColors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'], locations:[], tags:[], tip:'The sticker letter comes from the name of the place where your seedling was found. Walk in different areas to collect different letters toward the full alphabet.' },
+  { id:'appliancesstore', name:'Appliances Store', icon:'🔌', wear:'Battery / Fairy Lights', variants:['D Battery (Red-Yellow)','D Battery (Silver-Blue)','D Battery (Green-Silver)','AAA Battery (Red-Yellow)','AAA Battery (Silver-Blue)','AAA Battery (Green-Silver)','Light Bulb','Colorful String Lights'], tags:['shop=appliance','shop=computer','shop=electronics'], tip:'Large electronics and appliance stores work reliably. Not all home goods stores count.' },
+  { id:'curryrestaurant', name:'Curry Restaurant', icon:'🍛', wear:'Curry bowl', tags:['cuisine=curry','cuisine=indian','cuisine=sri_lankan','cuisine=nepalese'], tip:'Indian, Thai, and other curry-focused restaurants all qualify.' },
+  { id:'diystore', name:'DIY Store', icon:'🔧', wear:'Tool', tags:['shop=doityourself','shop=hardware'], tip:'Large hardware or home improvement stores work best. Small local hardware shops may not always qualify.' },
+  { id:'university', name:'University', icon:'🎓', wear:'College crest patch', tags:['amenity=university','amenity=college','building=university'], tip:'Must be on a university or college campus.' },
+  { id:'mexicanrestaurant', name:'Mexican Restaurant', icon:'🌮', wear:'Taco', tags:['cuisine=mexican','cuisine=tex-mex'], tip:'Any Mexican restaurant or taqueria works.' },
+  { id:'laundromat', name:'Laundromat', icon:'🧺', wear:'Laundry item', tags:['shop=laundry','shop=dry_cleaning'], tip:'Self-service coin laundromats work. Dry cleaners may not always qualify.' },
+  { id:'koreanrestaurant', name:'Korean Restaurant', icon:'🍱', wear:'Kimchi', tags:['cuisine=korean'], tip:'Any Korean restaurant works. Korean BBQ spots are a reliable option.' },
+  { id:'roadside', name:'Roadside', icon:'🪧', wear:'Coin / Sticker', category:'roadside', skipOverpass:true, variants:[], note:'Basically everywhere you walk outside.<br>These little ones show up wherever your feet take you! 🚶', locations:[], tags:[], tip:'Roadside Pikmin appear anywhere you walk. Coins are the most common reward; stickers come in different badge colors (green, blue, orange) and carry letters from nearby place names.' },
+];
+
+// ─── ROADSIDE COLLECTION DECORS ───────────────────────────────────────────────
+const roadsideDecors = [
+  { id:'roadside-coin', name:'Coin', icon:'🪙', wear:'Coin', category:'roadside', skipOverpass:true, variants:['Coin'], colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'], rareVariants:['★ Rare'], tags:[] },
+  { id:'roadside-sc', name:'Sticker (by color)', icon:'🪧', wear:'Sticker', category:'roadside', skipOverpass:true, variants:[], stickerColors:['Green','Blue','Orange'], pikminColors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'], tags:[] },
+  { id:'roadside-letters', name:'Sticker (by letter)', icon:'🪧', wear:'Sticker', category:'roadside', skipOverpass:true, variants:[], letterColors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'], tags:[] },
 ];
 
 // ─── EVENT DECORS ─────────────────────────────────────────────────────────────
@@ -382,28 +399,37 @@ const eventDecors = [
   { id:'halloweenlight', name:'Halloween Light', icon:'🕯️', wear:'Halloween Light', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'halloweentreat', name:'Halloween Treat', icon:'🍬', wear:'Halloween Treat', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'jackolantern', name:"Jack-o'-Lantern", icon:'🎃', wear:"Jack-o'-Lantern", category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'choco2026', name:'2026 Chocolate', icon:'🍫', wear:'Chocolate', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
   { id:'valentinesticker', name:'Valentine Sticker', icon:'💝', wear:'Valentine Sticker', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'reversevalentine', name:'Reverse Valentine Sticker', icon:'💌', wear:'Reverse Valentine Sticker', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'easteregg', name:'Easter Egg / Bunny Egg', icon:'🥚', wear:'Easter Egg / Bunny Egg', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'ballornament', name:'Ball Ornament', icon:'🎄', wear:'Ball Ornament', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'mitten', name:'Mitten', icon:'🧤', wear:'Mitten', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  // Spring & Summer — newest first
-  { id:'icecream', name:'Ice Cream', icon:'🍦', wear:'Ice Cream', category:'Spring & Summer', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'shavedice', name:'Shaved Ice', icon:'🧊', wear:'Shaved Ice', category:'Spring & Summer', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'surfboard', name:'Surfboard Keychain', icon:'🏄', wear:'Surfboard Keychain', category:'Spring & Summer', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'sneakerkeychain', name:'Sneaker Keychain', icon:'👟', wear:'Sneaker Keychain', category:'Spring & Summer', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  // Seasonal
+  { id:'springsticker', name:'Spring Sticker', icon:'🌸', wear:'Spring Sticker', category:'Seasonal', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'summersticker', name:'Summer Sticker', icon:'☀️', wear:'Summer Sticker', category:'Seasonal', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'fallsticker', name:'Fall Sticker', icon:'🍂', wear:'Fall Sticker', category:'Seasonal', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'wintersticker', name:'Winter Sticker', icon:'☃️', wear:'Winter Sticker', category:'Seasonal', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'surfboard', name:'Surfboard Keychain', icon:'🏄', wear:'Surfboard Keychain', category:'Seasonal', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'coral', name:'Coral', icon:'🪸', wear:'Coral', category:'Seasonal', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'sneakerkeychain', name:'Sneaker Keychain', icon:'👟', wear:'Sneaker Keychain', category:'Seasonal', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  // Food
+  { id:'icecreamclassic', name:'Ice Cream: Classic', icon:'🍦', wear:'Ice Cream', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'icecream2024', name:'Ice Cream: 2024 Flavor', icon:'🍦', wear:'Ice Cream', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'choco2026', name:'2026 Chocolate', icon:'🍫', wear:'Chocolate', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
+  { id:'chocolate', name:'Chocolate', icon:'🍫', wear:'Chocolate', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'shavedice', name:'Shaved Ice', icon:'🧊', wear:'Shaved Ice', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'cheese', name:'Cheese', icon:'🧀', wear:'Cheese', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'mooncake', name:'Mooncake', icon:'🥮', wear:'Mooncake', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'afternoontea', name:'Afternoon Tea', icon:'🫖', wear:'Afternoon Tea', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'osechi', name:'Osechi', icon:'🎑', wear:'Osechi', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
   // Cultural — newest first
   { id:'lunarnewyeargold', name:'Lunar New Year Ornament (Gold)', icon:'🏮', wear:'Gold Ornament', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'lunarnewyearred', name:'Lunar New Year Ornament (Red)', icon:'🧧', wear:'Red Ornament', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'riocarnival', name:'Rio Carnival', icon:'🎭', wear:'Rio Carnival', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'colorpowder', name:'Color Powder', icon:'🎨', wear:'Color Powder', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
   { id:'klompen', name:'Klompen Keychain', icon:'🪵', wear:'Klompen Keychain', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
-  { id:'mahjong', name:'Mahjong Tile', icon:'🀄', wear:'Mahjong Tile', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'mooncake', name:'Mooncake', icon:'🥮', wear:'Mooncake', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'mahjong', name:'Mahjong Tile', icon:'🀄', wear:'Mahjong Tile', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], comingSoon:true, tip:'27 tiles total: 2 Red · 4 Yellow · 4 Blue · 5 White · 4 Purple · 4 Rock · 4 Winged.' },
   { id:'calavera', name:'Calavera', icon:'💀', wear:'Calavera', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'afternoontea', name:'Afternoon Tea', icon:'🫖', wear:'Afternoon Tea', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'osechi', name:'Osechi', icon:'🎑', wear:'Osechi', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
   // New Year — newest first
   { id:'partypopper2025', name:'Party Popper 2025', icon:'🎉', wear:'Party Popper', category:'New Year', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'ornament2025', name:'2025 Ornament', icon:'✨', wear:'2025 Ornament', category:'New Year', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
@@ -411,25 +437,33 @@ const eventDecors = [
   { id:'nyglasses2023', name:'2023 Glasses', icon:'🕶️', wear:'2023 Glasses', category:'New Year', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   // Collaboration — newest first
   { id:'mario', name:'Super Mario Keychain', icon:'🍄', wear:'Mario Keychain', category:'Collaboration', colors:['Red','Yellow','Blue','Purple'] },
-  { id:'goldentoyairplane', name:'Golden Toy Airplane', icon:'✈️', wear:'Golden Toy Airplane', category:'Collaboration', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'goldentoyairplane', name:'Golden Toy Airplane', icon:'✈️', wear:'Golden Toy Airplane', category:'Collaboration', colors:['Yellow'] },
   { id:'nintendoconsoles', name:'Nintendo Consoles', icon:'🎮', wear:"Nintendo Console '80–'95", category:'Collaboration', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'tinyinstrument', name:'Tiny Instrument', icon:'🎵', wear:'Tiny Instrument', category:'Collaboration', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'pikmin4toy', name:'Pikmin 4 Toy', icon:'🧸', wear:'Pikmin 4 Toy', category:'Collaboration', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
   { id:'pikmin4ship', name:'Pikmin 4 Spaceship', icon:'🚀', wear:'Pikmin 4 Spaceship', category:'Collaboration', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'chesspiece', name:'Chess Piece', icon:'♟️', wear:'Chess Piece', category:'Collaboration', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'chesspiece', name:'Chess Piece', icon:'♟️', wear:'Chess Piece', variants:['Black','White'], category:'Collaboration', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'fingerboard', name:'Fingerboard', icon:'🛹', wear:'Fingerboard', category:'Collaboration', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'koppaitesuit', name:'Koppaite Space Suit', icon:'👨‍🚀', wear:'Koppaite Space Suit', category:'Collaboration', colors:['Red','Yellow','Blue'] },
   // Anniversary — newest first
-  { id:'fourthanniversary', name:'4th Anniversary', icon:'🎊', wear:'4th Anniversary', category:'Anniversary', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'photobuttonbadge', name:'Photo Button Badge', icon:'📸', wear:'Photo Button Badge', category:'Anniversary', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'fourthanniversary', name:'4th Anniversary Flower Box', icon:'🎊', wear:'4th Anniversary Flower Box', category:'Anniversary', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
+  { id:'fourthannivsnack', name:'4th Anniversary Snack', icon:'🥠', wear:'Anniversary Snack', category:'Anniversary', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'thirdanniversary', name:'3rd Anniversary Cupcake', icon:'🧁', wear:'Anniversary Cupcake', category:'Anniversary', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'firstanniversary', name:'1st Anniversary Snack', icon:'🎂', wear:'Anniversary Snack', category:'Anniversary', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'puzzle2024fall', name:'Puzzle: 2024 Fall Memories', icon:'🧩', wear:'Puzzle', category:'Anniversary', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'puzzle2023summer', name:'Puzzle: 2023 Summer Memories', icon:'🧩', wear:'Puzzle', category:'Anniversary', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'puzzle2022summer', name:'Puzzle: 2022 Summer Memories', icon:'🧩', wear:'Puzzle', category:'Anniversary', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'puzzle2021fall', name:'Puzzle: 2021 Fall Memories', icon:'🧩', wear:'Puzzle', category:'Anniversary', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   // Other — newest first
-  { id:'pacifier', name:'Pacifier', icon:'🍼', wear:'Pacifier', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'seasonalstickers', name:'Seasonal Stickers', icon:'🍂', wear:'Seasonal Sticker', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'playingcard', name:'Playing Card', icon:'🃏', wear:'Playing Card', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'paint', name:'Paint', icon:'🎨', wear:'Paint Tubes', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'pacifier', name:'Pacifier', icon:'🍼', wear:'Pacifier', category:'Other', colors:['Red'] },
+  { id:'playingcard', name:'Playing Card', icon:'🃏', wear:'Playing Card', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], comingSoon:true, tip:'27 cards total: 4 Red · 4 Yellow · 4 Blue · 3 White · 4 Purple · 4 Rock · 4 Winged.' },
   { id:'presentstickerGold', name:'Present Sticker (Gold)', icon:'🎁', wear:'Present Sticker (Gold)', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'puzzle', name:'Puzzle', icon:'🧩', wear:'Puzzle', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'flowercard', name:'Flower Card', icon:'🌸', wear:'Flower Card', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'flowercard1', name:'Flower Card (Volume 1)', icon:'🌸', wear:'Flower Card', variants:['January','February','March','April','May','June','July','August','September','October','November','December'], category:'Other', colors:['Red','Yellow','Blue','Purple'], comingSoon:true, tip:'Each month has a specific set of Pikmin colors. April & December each have 2 Red cards.' },
+  { id:'flowercard2', name:'Flower Card (Volume 2)', icon:'🌸', wear:'Flower Card', variants:['January','February','March','April','May','June','July','August','September','October','November','December'], category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], comingSoon:true },
+  { id:'redrosette', name:'Red Rosette', icon:'🏵️', wear:'Red Ribbon', category:'Other', colors:['Red'] },
+  { id:'yellowrosette', name:'Yellow Rosette', icon:'🏵️', wear:'Yellow & Green Ribbon', category:'Other', colors:['Yellow'] },
+  { id:'photobuttonbadge', name:'Photo Button Badge', icon:'📸', wear:'Photo Button Badge', category:'Other', colors:['Red'] },
 ];
 
 // ─── COLOR / VARIANT HELPERS ────────────────────────────────────────────────
@@ -439,7 +473,35 @@ const DECOR_COLORS={
   themepark:['Red','Yellow','Blue'],university:['Red','Yellow','Blue'],appliancesstore:['Yellow'],
   restaurant:FULL_8,forest:FULL_8,koreanrestaurant:FULL_8
 };
-const VARIANT_COLORS={'station:2':['Red']}; // Gold Ticket is Red only
+const VARIANT_COLORS={
+  'station:2':['Red'], // Gold Ticket is Red only
+  // Flower Card Volume 1 (per month)
+  'flowercard1:0':['Yellow','Purple'],   // January
+  'flowercard1:1':['Blue','Purple'],     // February
+  'flowercard1:2':['Yellow','Blue'],     // March
+  'flowercard1:3':['Red'],              // April (2 Red cards)
+  'flowercard1:4':['Yellow','Blue'],    // May
+  'flowercard1:5':['Blue','Purple'],    // June
+  'flowercard1:6':['Red','Blue'],       // July
+  'flowercard1:7':['Yellow','Purple'],  // August
+  'flowercard1:8':['Red','Purple'],     // September
+  'flowercard1:9':['Yellow','Purple'],  // October
+  'flowercard1:10':['Yellow','Blue'],   // November
+  'flowercard1:11':['Red'],            // December (2 Red cards)
+  // Flower Card Volume 2 (per month)
+  'flowercard2:0':['Red','Rock'],       // January
+  'flowercard2:1':['Yellow','Winged'],  // February
+  'flowercard2:2':['Purple'],           // March
+  'flowercard2:3':['Purple'],           // April
+  'flowercard2:4':['Red'],              // May
+  'flowercard2:5':['Rock'],             // June
+  'flowercard2:6':['Yellow'],           // July
+  'flowercard2:7':['Winged'],           // August
+  'flowercard2:8':['White'],            // September
+  'flowercard2:9':['Winged'],           // October
+  'flowercard2:10':['Blue','White'],    // November
+  'flowercard2:11':['Blue','Rock'],     // December
+};
 const COLOR_BG={Red:'#f5c8c8',Yellow:'#f5e89a',Blue:'#b8d4f0',Purple:'#d8b8f0',White:'#ebebeb',Rock:'#cec8bc',Winged:'#f5c0dc',Ice:'#c8eef5'};
 const COLOR_ABBR={Red:'R',Yellow:'Y',Blue:'B',Purple:'P',White:'W',Rock:'K',Winged:'Wi',Ice:'Ic'};
 const COLOR_IMG={Red:'images/red.png',Yellow:'images/yellow.png',Blue:'images/blue.png',Purple:'images/purple.png',White:'images/white.png',Rock:'images/rock.png',Winged:'images/pink.png',Ice:'images/icy.png'};
@@ -447,7 +509,7 @@ const COLOR_IMG_CHK={Red:'images/red_chk.png',Yellow:'images/yellow_chk.png',Blu
 function colorsFor(d,vi){if(vi!==undefined){const vk=`${d.id}:${vi}`;if(VARIANT_COLORS[vk])return VARIANT_COLORS[vk];}return d.colors||DECOR_COLORS[d.id]||FULL_7;}
 function getVariants(d){return d.variants||d.wear.split(' / ').map(v=>v.trim());}
 function slotKey(id,vi,color){return`${id}:${vi}:${color}`;}
-function findDecor(id){return decors.find(x=>x.id===id)||eventDecors.find(x=>x.id===id);}
+function findDecor(id){return decors.find(x=>x.id===id)||roadsideDecors.find(x=>x.id===id)||eventDecors.find(x=>x.id===id);}
 function baseSlots(d){return getVariants(d).reduce((s,v,vi)=>s+colorsFor(d,vi).length,0);}
 function letterSlots(d){return d.letterColors?26*d.letterColors.length:0;}
 function letterDone(d){
@@ -456,24 +518,37 @@ function letterDone(d){
   'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>d.letterColors.forEach(c=>{if(collected.has(slotKey(d.id,`sticker-${l}`,c)))n++;}));
   return n;
 }
-function totalSlots(d){const r=d.rareVariants?d.rareVariants.length*colorsFor(d).length:0;return baseSlots(d)+r+letterSlots(d);}
+function stickerColorSlots(d){return d.stickerColors?d.stickerColors.length*d.pikminColors.length:0;}
+function stickerColorDone(d){
+  if(!d.stickerColors)return 0;
+  let n=0;
+  d.stickerColors.forEach(sc=>d.pikminColors.forEach(pc=>{if(collected.has(slotKey(d.id,sc,pc)))n++;}));
+  return n;
+}
+function totalSlots(d){if(d.comingSoon)return 0;const r=d.rareVariants?d.rareVariants.length*colorsFor(d).length:0;return baseSlots(d)+r+letterSlots(d)+stickerColorSlots(d);}
 function doneSlots(d){
   let n=0;
   getVariants(d).forEach((v,vi)=>colorsFor(d,vi).forEach(c=>{if(collected.has(slotKey(d.id,vi,c)))n++;}));
   if(d.rareVariants)d.rareVariants.forEach((v,ri)=>colorsFor(d).forEach(c=>{if(collected.has(slotKey(d.id,`r${ri}`,c)))n++;}));
-  return n+letterDone(d);
+  return n+letterDone(d)+stickerColorDone(d);
 }
 function isBaseComplete(d){return getVariants(d).every((v,vi)=>colorsFor(d,vi).every(c=>collected.has(slotKey(d.id,vi,c))));}
 function isDecorFullyCollected(d){return doneSlots(d)===totalSlots(d);}
-function getTotalSlots(){return decors.reduce((s,d)=>s+totalSlots(d),0);}
+function getTotalSlots(){return [...decors,...roadsideDecors].reduce((s,d)=>s+totalSlots(d),0);}
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
-let collected = new Set(JSON.parse(localStorage.getItem('pikgarden-collected')||'[]'));
+let collected = (()=>{
+  const raw=new Set(JSON.parse(localStorage.getItem('pikgarden-collected')||'[]'));
+  // migrate old roadside letter keys: roadside:sticker-X:Color → roadside-letters:sticker-X:Color
+  const migrated=new Set([...raw].map(k=>k.startsWith('roadside:sticker-')?k.replace('roadside:','roadside-letters:'):k));
+  if(migrated.size!==raw.size||[...migrated].some((k,i)=>[...raw][i]!==k))localStorage.setItem('pikgarden-collected',JSON.stringify([...migrated]));
+  return migrated;
+})();
 let collectionTab = 'regular';
 let openAccordions = new Set();
 let closedAccordions = new Set();
 function isDesktop(){ return window.innerWidth>=640; }
-function isAccordionOpen(d){ if(isDesktop()||d.id==='roadside')return true; return openAccordions.has(d.id)||(closedAccordions.has(d.id)?false:!isDecorFullyCollected(d)); }
+function isAccordionOpen(d){ if(isDesktop())return true; return openAccordions.has(d.id)||(closedAccordions.has(d.id)?false:!isDecorFullyCollected(d)); }
 let userCoords = (()=>{try{const s=localStorage.getItem('pikgarden-coords');return s?JSON.parse(s):null;}catch(e){return null;}})();
 const CACHE_TTL=24*60*60*1000;
 const overpassCache=(()=>{try{const raw=localStorage.getItem('pikgarden-overpass-cache');if(!raw)return{};const stored=JSON.parse(raw);const now=Date.now();Object.keys(stored).forEach(k=>{if(now-stored[k].ts>CACHE_TTL)delete stored[k];});return stored;}catch(e){return{};}})();
@@ -508,9 +583,9 @@ function fmtDist(m){
 function normalize(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
 function getNearestDist(d){
   if(!userCoords)return null;
-  let locs=d.locations||[];
-  if(locs.length===0){const key=`${d.id}:${userCoords.lat.toFixed(2)}:${userCoords.lng.toFixed(2)}`;locs=(overpassCache[key]&&overpassCache[key].data)||[];}
-  if(locs.length===0)return null;
+  const key=`${d.id}:${userCoords.lat.toFixed(2)}:${userCoords.lng.toFixed(2)}`;
+  const locs=(overpassCache[key]&&overpassCache[key].data)||[];
+  if(!locs.length)return null;
   return Math.min(...locs.map(l=>haversine(userCoords.lat,userCoords.lng,l.lat,l.lng)));
 }
 function getSortedLocations(locs){if(!userCoords)return locs;return[...locs].map(l=>({...l,distance:haversine(userCoords.lat,userCoords.lng,l.lat,l.lng)})).sort((a,b)=>a.distance-b.distance);}
@@ -639,10 +714,26 @@ function setManualLocation(){
 
 // ─── OVERPASS API ────────────────────────────────────────────────────────────
 function buildOverpassQuery(tags,lat,lng,radius=5000){
-  const parts=tags.flatMap(tag=>{const[k,v]=tag.split('=');return[`node["${k}"="${v}"](around:${radius},${lat},${lng});`,`way["${k}"="${v}"](around:${radius},${lat},${lng});`];});
-  return`[out:json][timeout:25];\n(\n${parts.join('\n')}\n);\nout center 8;`;
+  const parts=tags.flatMap(tag=>{const[k,v]=tag.split('=');return[`node["${k}"="${v}"]["intermittent"!="yes"](around:${radius},${lat},${lng});`,`way["${k}"="${v}"]["intermittent"!="yes"](around:${radius},${lat},${lng});`];});
+  return`[out:json][timeout:30];\n(\n${parts.join('\n')}\n);\nout center 20;`;
 }
 function osmTagToLabel(tag){const[,v]=tag.split('=');return v.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());}
+const OVERPASS_ENDPOINTS=[
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+];
+async function tryOverpassFetch(query,signal){
+  for(const endpoint of OVERPASS_ENDPOINTS){
+    try{
+      const resp=await fetch(endpoint,{method:'POST',body:'data='+encodeURIComponent(query),signal});
+      const text=await resp.text();
+      if(!text.startsWith('<'))return JSON.parse(text);
+    }catch(e){
+      if(e.name==='AbortError')throw e;
+    }
+  }
+  throw new Error('All Overpass endpoints failed');
+}
 async function fetchOverpassLocations(decor,lat,lng){
   const key=`${decor.id}:${lat.toFixed(2)}:${lng.toFixed(2)}`;
   if(overpassCache[key])return overpassCache[key].data;
@@ -650,18 +741,20 @@ async function fetchOverpassLocations(decor,lat,lng){
   const controller=new AbortController();
   const timeoutId=setTimeout(()=>controller.abort(),30000);
   try{
-    const resp=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:'data='+encodeURIComponent(query),signal:controller.signal});
+    const json=await tryOverpassFetch(query,controller.signal);
     clearTimeout(timeoutId);
-    const json=await resp.json();
     const results=json.elements
-      .filter(el=>el.tags&&el.tags.name)
       .map(el=>{
         const elLat=el.lat??el.center?.lat;
         const elLng=el.lon??el.center?.lon;
-        const matchedTag=decor.tags.find(t=>{const[k,v]=t.split('=');return el.tags[k]===v;});
-        return{name:el.tags.name,type:osmTagToLabel(matchedTag||decor.tags[0]),lat:elLat,lng:elLng};
+        if(!elLat||!elLng)return null;
+        const matchedTag=decor.tags.find(t=>{const[k,v]=t.split('=');return el.tags&&el.tags[k]===v;});
+        const typeLabel=osmTagToLabel(matchedTag||decor.tags[0]);
+        const osmName=el.tags?.name;
+        const name=osmName||typeLabel;
+        return{name,type:typeLabel,lat:elLat,lng:elLng,named:!!osmName};
       })
-      .filter(l=>l.lat&&l.lng)
+      .filter(Boolean)
       .slice(0,8);
     if(results.length>0){overpassCache[key]={data:results,ts:Date.now()};saveOverpassCache();}
     return results;
@@ -670,14 +763,14 @@ async function fetchOverpassLocations(decor,lat,lng){
     throw e;
   }
 }
-function renderLocItem(l){return`<li class="location-item"><div class="loc-info"><div class="loc-name">${l.name}</div><div class="loc-meta"><span class="loc-type">${l.type}</span>${l.distance!==undefined?`<span class="loc-distance-badge">${fmtDist(l.distance)}</span>`:''}</div></div>${l.lat&&l.lng?`<button class="maps-btn" onclick="openMaps('${l.name.replace(/'/g,"\\'").replace(/"/g,'&quot;')}',${l.lat},${l.lng})">Open in Maps</button>`:''}</li>`;}
+function renderLocItem(l){const showType=l.type&&l.type!==l.name;return`<li class="location-item"><div class="loc-info"><div class="loc-name">${l.name}</div><div class="loc-meta">${showType?`<span class="loc-type">${l.type}</span>`:''}${l.distance!==undefined?`<span class="loc-distance-badge">${fmtDist(l.distance)}</span>`:''}</div></div>${l.lat&&l.lng?`<button class="maps-btn" onclick="openMaps('${l.name.replace(/'/g,"\\'").replace(/"/g,'&quot;')}',${l.lat},${l.lng},'${l.named?'true':'false'}')">Open in Maps</button>`:''}</li>`;}
 let listSpinnerTimer=null;
 function startListSpinner(spinnerId,label){
   stopListSpinner();
   const frames=['◐','◓','◑','◒'];let i=0;
   function tick(){
     const el=document.getElementById(spinnerId);
-    if(el){el.innerHTML=frames[i%4]+' '+label+' <span style="font-size:12px;font-weight:400;color:#7a8c77;">This may take 10–30 seconds 🌿</span>';i++;}
+    if(el){el.innerHTML=frames[i%4]+' '+label+' <span style="font-size:12px;font-weight:400;color:#7a8c77;">This may take a few seconds 🌿</span>';i++;}
   }
   tick();
   listSpinnerTimer=setInterval(tick,120);
@@ -696,7 +789,7 @@ function retryOverpassLoad(listId,decorId){
   const decor=findDecor(decorId);
   const el=document.getElementById(listId);
   if(!decor||!el||!userCoords)return;
-  el.innerHTML=`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby… <span style="font-size:12px;font-weight:400;color:#7a8c77;">This may take 10–30 seconds 🌿</span></li>`;
+  el.innerHTML=`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby… <span style="font-size:12px;font-weight:400;color:#7a8c77;">This may take a few seconds 🌿</span></li>`;
   loadOverpassIntoList(listId,decor);
 }
 const retryLabels=['Trying once more…','One last try…'];
@@ -878,7 +971,7 @@ function renderDetailContent(containerId,id){
   const noteHtml=d.note?`<li style="font-size:14px;color:#888;padding:16px 0;list-style:none;">${d.note}</li>`:null;
   const noLocationHtml=`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/tree-trunk.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#7a8c77;margin:0 0 10px;">No location set yet.</p><p style="font-size:11px;color:#7a8c77;line-height:1.6;margin:0;">Tap <a href="#" onclick="useMyLocation();return false;" style="color:#7a8c77;text-decoration:underline;text-underline-offset:2px;">Use My Location</a> at the top to find spots near you.</p></li>`;
   const nothingNearbyHtml=`<li style="list-style:none;padding:16px 0 20px;text-align:center;"><img src="images/wind.avif" alt="" aria-hidden="true" style="width:180px;height:180px;object-fit:contain;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;"><p style="font-size:15px;color:#7a8c77;margin:0 0 10px;">Nothing nearby.</p><p style="font-size:11px;color:#7a8c77;line-height:1.6;margin:0;">Try moving to a different area or <a href="#" onclick="useMyLocation();return false;" style="color:#7a8c77;text-decoration:underline;text-underline-offset:2px;">updating your location</a>.</p></li>`;
-  const loadingHtml=useOverpass&&!cached?`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby… <span style="font-size:12px;font-weight:400;color:#7a8c77;">This may take 10–30 seconds 🌿</span></li>`:cached&&cachedData.length===0?nothingNearbyHtml:initialLocs.map(renderLocItem).join('');
+  const loadingHtml=useOverpass&&!cached?`<li id="${listId}-spinner" style="font-size:15px;color:#4a9e30;font-weight:500;padding:40px 0;list-style:none;">◐ Searching nearby… <span style="font-size:12px;font-weight:400;color:#7a8c77;">This may take a few seconds 🌿</span></li>`:cached&&cachedData.length===0?nothingNearbyHtml:initialLocs.map(renderLocItem).join('');
   const locsHtml=noteHtml?noteHtml:isExclusive?exclusiveHtml:(!userCoords&&!d.skipOverpass)?noLocationHtml:loadingHtml;
   document.getElementById(containerId).innerHTML=`
     <div class="detail-header"><span class="detail-icon">${d.icon}</span><div><div class="detail-name">${d.name} Pikmin</div><div class="detail-subtitle">Wears: ${d.wear}${progressNote}</div></div></div>
@@ -901,7 +994,7 @@ function goToCollection(id){
   const btn=document.querySelectorAll('.tab')[0];
   showTab('collection',btn,id);
 }
-function openMaps(name,lat,lng){window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&center=${lat},${lng}`,'_blank','noopener,noreferrer');}
+function openMaps(name,lat,lng,named){const url=named==='true'?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&center=${lat},${lng}`:`https://www.google.com/maps?q=${lat},${lng}`;window.open(url,'_blank','noopener,noreferrer');}
 
 // ─── COLLECTION TRACKER ──────────────────────────────────────────────────────
 function setCollectionTab(tab){collectionTab=tab;localStorage.setItem('pikgarden-subtab',tab);renderCollection();window.scrollTo({top:0});}
@@ -914,8 +1007,7 @@ function collectionSubTabs(){
 }
 function collectionContent(){
   if(collectionTab==='roadside'){
-    const list=decors.filter(d=>d.category==='roadside');
-    return list.map(d=>renderAccordionItem(d)).join('');
+    return roadsideDecors.map(d=>renderAccordionItem(d)).join('');
   }
   if(collectionTab==='events'){
     const cats=[...new Set(eventDecors.map(d=>d.category))];
@@ -948,10 +1040,25 @@ function renderDesktopCollection(){
     collectionSubTabs()+
     (isSingle?`<div style="max-width:calc(55% - 4px);margin:0 auto;">${content}</div>`:`<div class="collection-accordion-grid">${content}</div>`);
 }
+function renderStickerColorsGrid(d){
+  const colorClass={Green:'green',Blue:'blue',Orange:'orange'};
+  const labelChar={Green:'G',Blue:'B',Orange:'O'};
+  return`<div class="sticker-color-grid">`+
+    d.stickerColors.map(sc=>
+      `<div class="sticker-color-row">`+
+      `<span class="sc-sticker-label ${colorClass[sc]}">${labelChar[sc]}</span>`+
+      `<div class="color-grid">`+
+      d.pikminColors.map(pc=>{
+        const isC=collected.has(slotKey(d.id,sc,pc));
+        return`<button class="color-cell${isC?' collected':''}" onclick="toggleSlot('${d.id}','${sc}','${pc}')" title="${sc} sticker · ${pc}"><img src="${isC?COLOR_IMG_CHK[pc]:COLOR_IMG[pc]}" alt="${pc}"></button>`;
+      }).join('')+
+      `</div></div>`
+    ).join('')+
+    `</div>`;
+}
 function renderLetterGrid(d){
   const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
   return`<div class="letter-grid">`+
-    `<div class="letter-grid-header">STICKER</div>`+
     letters.map(letter=>
       `<div class="letter-row">`+
       `<span class="letter-label">${letter}</span>`+
@@ -965,6 +1072,17 @@ function renderLetterGrid(d){
     `</div>`;
 }
 function renderAccordionItem(d){
+  if(d.comingSoon){
+    const isOpen=isAccordionOpen(d);
+    return`<div class="accordion-item${isOpen?' open':''}">`+
+      `<button type="button" class="accordion-header" data-decor-id="${d.id}" onclick="toggleAccordion('${d.id}')">`+
+      `<span class="checklist-icon">${d.icon}</span>`+
+      `<span class="checklist-name">${d.name}</span>`+
+      `<span class="acc-arrow">▾</span></button>`+
+      `<div class="accordion-body${isOpen?' open':''}"><div class="accordion-body-inner"><div class="accordion-body-inner-pad">`+
+      `<div class="coming-soon-msg">🌱 Detailed tracking coming soon</div>`+
+      `</div></div></div></div>`;
+  }
   const done=doneSlots(d),total=totalSlots(d),full=done===total&&total>0,partial=done>0&&!full;
   const variants=getVariants(d),isOpen=isAccordionOpen(d),baseOk=isBaseComplete(d);
   const baseHTML=variants.map((v,vi)=>{
@@ -989,15 +1107,14 @@ function renderAccordionItem(d){
       }).join('')+
       `</div></div>`;
   }).join(''):'';
-  const isRoadside=d.id==='roadside';
   return`<div class="accordion-item${full?' full':partial?' partial':''}${isOpen?' open':''}">`+
-    (isRoadside?`<div class="accordion-header" style="cursor:default;">`:`<button type="button" class="accordion-header" data-decor-id="${d.id}" onclick="toggleAccordion('${d.id}')">`)+
+    `<button type="button" class="accordion-header" data-decor-id="${d.id}" onclick="toggleAccordion('${d.id}')">`+
     `<span class="checklist-icon">${d.icon}</span>`+
     `<span class="checklist-name">${d.name}</span>`+
     (full?`<span class="done-badge" style="flex-shrink:0">ALL DONE</span>`:'')+
-    (partial?`<div class="acc-progress-bar"><div class="acc-progress-bar-fill" style="width:${Math.round(done/total*100)}%"></div></div>`:(full?'':'<div style="flex:1"></div>'))+
-    (isRoadside?'</div>':'<span class="acc-arrow">▾</span></button>')+
-    `<div class="accordion-body${isOpen?' open':''}${isRoadside?' roadside-body':''}"><div class="accordion-body-inner"><div class="accordion-body-inner-pad">${baseHTML}${rareHTML}${d.letterColors?renderLetterGrid(d):''}${full&&!isRoadside?`<div style="display:flex;align-items:flex-end;justify-content:center;gap:0;margin-top:28px;"><img src="images/spiral-garden.avif" alt="" aria-hidden="true" style="width:160px;height:160px;object-fit:contain;display:block;margin-right:-40px;opacity:0.8;"><img src="images/gardening-woman.avif" alt="" aria-hidden="true" style="width:160px;height:160px;object-fit:contain;display:block;margin-bottom:14px;opacity:0.8;"></div>`:''}</div></div></div>`+
+    (partial?`<div class="acc-progress-bar"><div class="acc-progress-bar-fill" style="width:${Math.round(done/total*100)}%"></div></div>`:'')+
+    `<span class="acc-arrow">▾</span></button>`+
+    `<div class="accordion-body${isOpen?' open':''}"><div class="accordion-body-inner"><div class="accordion-body-inner-pad">${baseHTML}${rareHTML}${d.stickerColors?renderStickerColorsGrid(d):''}${d.letterColors?renderLetterGrid(d):''}${!full?`<div class="mark-all-row"><button class="mark-all-btn" onclick="markAllCollected('${d.id}')">Mark all collected</button></div>`:''}</div></div></div>`+
     `</div>`;
 }
 function toggleAccordion(id){
@@ -1083,13 +1200,41 @@ function toggleSlot(id,vi,color){
   }
 })();
 let toastHideTimer=null;
-function showToast(msg){
+function showToast(msg,undoFn=null){
   const el=document.getElementById('toast');
   if(!el)return;
   if(toastHideTimer)clearTimeout(toastHideTimer);
-  el.textContent=msg;
+  if(undoFn){
+    el.innerHTML=msg+`<button class="toast-undo" onclick="${undoFn}">Undo</button>`;
+    el.style.pointerEvents='auto';
+  }else{
+    el.textContent=msg;
+    el.style.pointerEvents='none';
+  }
   el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)';
-  toastHideTimer=setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(16px)';},2500);
+  toastHideTimer=setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(16px)';el.style.pointerEvents='none';},undoFn?5000:2500);
+}
+let markAllUndoBuffer=null;
+function markAllCollected(id){
+  const d=findDecor(id);if(!d)return;
+  const toAdd=[];
+  getVariants(d).forEach((v,vi)=>colorsFor(d,vi).forEach(c=>{const k=slotKey(id,vi,c);if(!collected.has(k))toAdd.push(k);}));
+  if(d.rareVariants)d.rareVariants.forEach((v,ri)=>colorsFor(d).forEach(c=>{const k=slotKey(id,`r${ri}`,c);if(!collected.has(k))toAdd.push(k);}));
+  if(d.stickerColors)d.stickerColors.forEach(sc=>d.pikminColors.forEach(pc=>{const k=slotKey(id,sc,pc);if(!collected.has(k))toAdd.push(k);}));
+  if(d.letterColors)'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>d.letterColors.forEach(c=>{const k=slotKey(id,`sticker-${l}`,c);if(!collected.has(k))toAdd.push(k);}));
+  if(!toAdd.length)return;
+  markAllUndoBuffer={id,keys:toAdd};
+  toAdd.forEach(k=>{collected.add(k);localStorage.setItem(k,'1');});
+  launchFireworks();
+  renderCollection();
+  showToast('All marked as collected!','undoMarkAll()');
+}
+function undoMarkAll(){
+  if(!markAllUndoBuffer)return;
+  markAllUndoBuffer.keys.forEach(k=>{collected.delete(k);localStorage.removeItem(k);});
+  markAllUndoBuffer=null;
+  renderCollection();
+  showToast('Undone.');
 }
 function exportCollection(){
   const data=JSON.stringify([...collected],null,2);
