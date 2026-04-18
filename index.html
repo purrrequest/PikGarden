@@ -163,6 +163,18 @@
   .done-badge { font-size:11px; background:#c8f0d4; color:#1a6e35; border-radius:4px; padding:1px 5px; margin-left:12px; font-weight:500; letter-spacing:0.3px; vertical-align:middle; }
   .mark-all-row { display:flex; justify-content:flex-end; margin-top:19px; padding-top:10px; border-top:1px solid rgba(170,196,158,0.3); }
   .coming-soon-msg { font-size:13px; color:#7a8c77; font-style:italic; padding:4px 0 2px; }
+  .mahjong-cell { position:relative; border:none; background:transparent; padding:0; cursor:pointer; border-radius:4px; transition:transform 0.12s; }
+  .mahjong-cell:hover { transform:scale(1.1); }
+  .mahjong-cell .tile-img { width:38px; height:auto; display:block; border-radius:4px; }
+  .mahjong-cell .chk-overlay { position:absolute; bottom:0; right:0; width:16px; height:16px; display:none; }
+  .mahjong-cell.collected .chk-overlay { display:block; }
+  .card-suit-section { margin-bottom:20px; }
+  .card-suit-section:last-child { margin-bottom:0; }
+  .card-suit-label { font-size:11px; font-weight:500; color:#5a6e57; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+  .card-grid { display:flex; flex-wrap:wrap; gap:14px; }
+  .card-cell { border:none; background:transparent; padding:0; cursor:pointer; border-radius:4px; transition:transform 0.12s; }
+  .card-cell:hover { transform:scale(1.1); }
+  .card-cell img { width:38px; height:auto; display:block; border-radius:4px; }
   .mark-all-btn { font-size:12px; color:#7a8c77; background:none; border:none; cursor:pointer; padding:0; font-family:'Inter',sans-serif; text-decoration:underline; text-underline-offset:3px; transition:opacity 0.15s; }
   .mark-all-btn:hover { opacity:0.65; }
   .toast-undo { background:none; border:none; cursor:pointer; font-size:13px; font-family:'Inter',sans-serif; font-weight:600; color:#2d5a1b; text-decoration:underline; text-underline-offset:3px; padding:0; margin-left:10px; }
@@ -415,6 +427,7 @@ const eventDecors = [
   // Food
   { id:'icecreamclassic', name:'Ice Cream: Classic', icon:'🍦', wear:'Ice Cream', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'icecream2024', name:'Ice Cream: 2024 Flavor', icon:'🍦', wear:'Ice Cream', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'icecreamextra', name:'Ice Cream: Extra Flavor', icon:'🍦', wear:'Ice Cream', category:'Food', colors:['Ice'] },
   { id:'choco2026', name:'2026 Chocolate', icon:'🍫', wear:'Chocolate', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
   { id:'chocolate', name:'Chocolate', icon:'🍫', wear:'Chocolate', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'shavedice', name:'Shaved Ice', icon:'🧊', wear:'Shaved Ice', category:'Food', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
@@ -428,7 +441,7 @@ const eventDecors = [
   { id:'riocarnival', name:'Rio Carnival', icon:'🎭', wear:'Rio Carnival', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'colorpowder', name:'Color Powder', icon:'🎨', wear:'Color Powder', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
   { id:'klompen', name:'Klompen Keychain', icon:'🪵', wear:'Klompen Keychain', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
-  { id:'mahjong', name:'Mahjong Tile', icon:'🀄', wear:'Mahjong Tile', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], comingSoon:true, tip:'27 tiles total: 2 Red · 4 Yellow · 4 Blue · 5 White · 4 Purple · 4 Rock · 4 Winged.' },
+  { id:'mahjong', name:'Mahjong Tile', icon:'🀄', wear:'Mahjong Tile', category:'Cultural', variants:[], colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], mahjongSlots:true, tip:'27 tiles total: 2 Red · 4 Yellow · 4 Blue · 5 White · 4 Purple · 4 Rock · 4 Winged.' },
   { id:'calavera', name:'Calavera', icon:'💀', wear:'Calavera', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   // New Year — newest first
   { id:'partypopper2025', name:'Party Popper 2025', icon:'🎉', wear:'Party Popper', category:'New Year', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
@@ -457,7 +470,7 @@ const eventDecors = [
   // Other — newest first
   { id:'paint', name:'Paint', icon:'🎨', wear:'Paint Tubes', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'pacifier', name:'Pacifier', icon:'🍼', wear:'Pacifier', category:'Other', colors:['Red'] },
-  { id:'playingcard', name:'Playing Card', icon:'🃏', wear:'Playing Card', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], comingSoon:true, tip:'27 cards total: 4 Red · 4 Yellow · 4 Blue · 3 White · 4 Purple · 4 Rock · 4 Winged.' },
+  { id:'playingcard', name:'Playing Card', icon:'🃏', wear:'Playing Card', category:'Other', variants:[], colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], cardSlots:true, tip:'27 cards total: 4 Red · 4 Yellow · 4 Blue · 3 White · 4 Purple · 4 Rock · 4 Winged.' },
   { id:'presentstickerGold', name:'Present Sticker (Gold)', icon:'🎁', wear:'Present Sticker (Gold)', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'flowercard1', name:'Flower Card (Volume 1)', icon:'🌸', wear:'Flower Card', variants:['January','February','March','April','May','June','July','August','September','October','November','December'], category:'Other', colors:['Red','Yellow','Blue','Purple'], comingSoon:true, tip:'Each month has a specific set of Pikmin colors. April & December each have 2 Red cards.' },
   { id:'flowercard2', name:'Flower Card (Volume 2)', icon:'🌸', wear:'Flower Card', variants:['January','February','March','April','May','June','July','August','September','October','November','December'], category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], comingSoon:true },
@@ -502,6 +515,17 @@ const VARIANT_COLORS={
   'flowercard2:10':['Blue','White'],    // November
   'flowercard2:11':['Blue','Rock'],     // December
 };
+const MAHJONG_SUITS=[
+  {label:'Characters', keys:['character-1','character-2','character-3','character-4','character-5','character-6','character-7','character-8','character-9']},
+  {label:'Circles',    keys:['circle-1','circle-9']},
+  {label:'Bamboo',     keys:['bamboo-1','bamboo-2','bamboo-3','bamboo-4','bamboo-5','bamboo-6','bamboo-7','bamboo-8','bamboo-9']},
+  {label:'Honors',     keys:['honor-east','honor-south','honor-west','honor-north','honor-white','honor-green','honor-red']},
+];
+const CARD_SUITS=[
+  {label:'♣ Club Suit',    keys:['club-a','club-2','club-3','club-4','club-5','club-6','club-7','club-8','club-9','club-10','club-j','club-q','club-k']},
+  {label:'♦ Diamond Suit', keys:['diamond-a','diamond-2','diamond-3','diamond-4','diamond-5','diamond-6','diamond-7','diamond-8','diamond-9','diamond-10','diamond-j','diamond-q','diamond-k']},
+  {label:'🃏 Joker',       keys:['joker']},
+];
 const COLOR_BG={Red:'#f5c8c8',Yellow:'#f5e89a',Blue:'#b8d4f0',Purple:'#d8b8f0',White:'#ebebeb',Rock:'#cec8bc',Winged:'#f5c0dc',Ice:'#c8eef5'};
 const COLOR_ABBR={Red:'R',Yellow:'Y',Blue:'B',Purple:'P',White:'W',Rock:'K',Winged:'Wi',Ice:'Ic'};
 const COLOR_IMG={Red:'images/red.png',Yellow:'images/yellow.png',Blue:'images/blue.png',Purple:'images/purple.png',White:'images/white.png',Rock:'images/rock.png',Winged:'images/pink.png',Ice:'images/icy.png'};
@@ -525,12 +549,26 @@ function stickerColorDone(d){
   d.stickerColors.forEach(sc=>d.pikminColors.forEach(pc=>{if(collected.has(slotKey(d.id,sc,pc)))n++;}));
   return n;
 }
-function totalSlots(d){if(d.comingSoon)return 0;const r=d.rareVariants?d.rareVariants.length*colorsFor(d).length:0;return baseSlots(d)+r+letterSlots(d)+stickerColorSlots(d);}
+function mahjongSlotsTotal(d){return d.mahjongSlots?MAHJONG_SUITS.reduce((s,suit)=>s+suit.keys.length,0):0;}
+function mahjongSlotsDone(d){
+  if(!d.mahjongSlots)return 0;
+  let n=0;
+  MAHJONG_SUITS.forEach(suit=>suit.keys.forEach(k=>{if(collected.has(slotKey(d.id,k,'tile')))n++;}));
+  return n;
+}
+function cardSlotsTotal(d){return d.cardSlots?CARD_SUITS.reduce((s,suit)=>s+suit.keys.length,0):0;}
+function cardSlotsDone(d){
+  if(!d.cardSlots)return 0;
+  let n=0;
+  CARD_SUITS.forEach(suit=>suit.keys.forEach(k=>{if(collected.has(slotKey(d.id,k,'card')))n++;}));
+  return n;
+}
+function totalSlots(d){if(d.comingSoon)return 0;const r=d.rareVariants?d.rareVariants.length*colorsFor(d).length:0;return baseSlots(d)+r+letterSlots(d)+stickerColorSlots(d)+cardSlotsTotal(d)+mahjongSlotsTotal(d);}
 function doneSlots(d){
   let n=0;
   getVariants(d).forEach((v,vi)=>colorsFor(d,vi).forEach(c=>{if(collected.has(slotKey(d.id,vi,c)))n++;}));
   if(d.rareVariants)d.rareVariants.forEach((v,ri)=>colorsFor(d).forEach(c=>{if(collected.has(slotKey(d.id,`r${ri}`,c)))n++;}));
-  return n+letterDone(d)+stickerColorDone(d);
+  return n+letterDone(d)+stickerColorDone(d)+cardSlotsDone(d)+mahjongSlotsDone(d);
 }
 function isBaseComplete(d){return getVariants(d).every((v,vi)=>colorsFor(d,vi).every(c=>collected.has(slotKey(d.id,vi,c))));}
 function isDecorFullyCollected(d){return doneSlots(d)===totalSlots(d);}
@@ -1040,6 +1078,33 @@ function renderDesktopCollection(){
     collectionSubTabs()+
     (isSingle?`<div style="max-width:calc(55% - 4px);margin:0 auto;">${content}</div>`:`<div class="collection-accordion-grid">${content}</div>`);
 }
+function renderMahjongGrid(d){
+  return MAHJONG_SUITS.map(suit=>
+    `<div class="card-suit-section">`+
+    `<div class="card-suit-label">${suit.label}</div>`+
+    `<div class="card-grid">`+
+    suit.keys.map(k=>{
+      const isC=collected.has(slotKey(d.id,k,'tile'));
+      return`<button class="mahjong-cell${isC?' collected':''}" onclick="toggleSlot('${d.id}','${k}','tile')" title="${k}">`+
+        `<img class="tile-img" src="images/${k}.png" alt="${k}">`+
+        `<img class="chk-overlay" src="images/checked.png" alt="✓">`+
+        `</button>`;
+    }).join('')+
+    `</div></div>`
+  ).join('');
+}
+function renderCardGrid(d){
+  return CARD_SUITS.map(suit=>
+    `<div class="card-suit-section">`+
+    `<div class="card-suit-label">${suit.label}</div>`+
+    `<div class="card-grid">`+
+    suit.keys.map(k=>{
+      const isC=collected.has(slotKey(d.id,k,'card'));
+      return`<button class="card-cell${isC?' collected':''}" onclick="toggleSlot('${d.id}','${k}','card')" title="${k}"><img src="images/${isC?k+'-checked':k}.png" alt="${k}"></button>`;
+    }).join('')+
+    `</div></div>`
+  ).join('');
+}
 function renderStickerColorsGrid(d){
   const colorClass={Green:'green',Blue:'blue',Orange:'orange'};
   const labelChar={Green:'G',Blue:'B',Orange:'O'};
@@ -1114,7 +1179,7 @@ function renderAccordionItem(d){
     (full?`<span class="done-badge" style="flex-shrink:0">ALL DONE</span>`:'')+
     (partial?`<div class="acc-progress-bar"><div class="acc-progress-bar-fill" style="width:${Math.round(done/total*100)}%"></div></div>`:'')+
     `<span class="acc-arrow">▾</span></button>`+
-    `<div class="accordion-body${isOpen?' open':''}"><div class="accordion-body-inner"><div class="accordion-body-inner-pad">${baseHTML}${rareHTML}${d.stickerColors?renderStickerColorsGrid(d):''}${d.letterColors?renderLetterGrid(d):''}${!full?`<div class="mark-all-row"><button class="mark-all-btn" onclick="markAllCollected('${d.id}')">Mark all collected</button></div>`:''}</div></div></div>`+
+    `<div class="accordion-body${isOpen?' open':''}"><div class="accordion-body-inner"><div class="accordion-body-inner-pad">${baseHTML}${rareHTML}${d.mahjongSlots?renderMahjongGrid(d):''}${d.cardSlots?renderCardGrid(d):''}${d.stickerColors?renderStickerColorsGrid(d):''}${d.letterColors?renderLetterGrid(d):''}${!full?`<div class="mark-all-row"><button class="mark-all-btn" onclick="markAllCollected('${d.id}')">Mark all collected</button></div>`:''}</div></div></div>`+
     `</div>`;
 }
 function toggleAccordion(id){
@@ -1220,6 +1285,8 @@ function markAllCollected(id){
   const toAdd=[];
   getVariants(d).forEach((v,vi)=>colorsFor(d,vi).forEach(c=>{const k=slotKey(id,vi,c);if(!collected.has(k))toAdd.push(k);}));
   if(d.rareVariants)d.rareVariants.forEach((v,ri)=>colorsFor(d).forEach(c=>{const k=slotKey(id,`r${ri}`,c);if(!collected.has(k))toAdd.push(k);}));
+  if(d.mahjongSlots)MAHJONG_SUITS.forEach(suit=>suit.keys.forEach(k=>{const sk=slotKey(id,k,'tile');if(!collected.has(sk))toAdd.push(sk);}));
+  if(d.cardSlots)CARD_SUITS.forEach(suit=>suit.keys.forEach(k=>{const sk=slotKey(id,k,'card');if(!collected.has(sk))toAdd.push(sk);}));
   if(d.stickerColors)d.stickerColors.forEach(sc=>d.pikminColors.forEach(pc=>{const k=slotKey(id,sc,pc);if(!collected.has(k))toAdd.push(k);}));
   if(d.letterColors)'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>d.letterColors.forEach(c=>{const k=slotKey(id,`sticker-${l}`,c);if(!collected.has(k))toAdd.push(k);}));
   if(!toAdd.length)return;
