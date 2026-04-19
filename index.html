@@ -102,7 +102,7 @@
   .check-circle { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #aac49e; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; }
   .checklist-item.collected .check-circle { background: #2d5a1b; border-color: #2d5a1b; color: #fff; }
   .checklist-icon { font-size: 18px; }
-  .checklist-name { font-size: 16px; font-weight: 500; color: #555555; flex: 1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .checklist-name { font-size: 15px; font-weight: 500; color: #555555; flex: 1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .checklist-item.collected .checklist-name { color: #2d5a1b; text-decoration: line-through; opacity: 0.7; }
   .progress-bar-wrap { background: #d4e8c8; border-radius: 99px; height: 6px; margin-bottom: 20px; overflow: hidden; }
   .progress-bar-fill { height: 100%; background: #2d5a1b; border-radius: 99px; transition: width 0.3s; }
@@ -423,7 +423,7 @@ const eventDecors = [
   { id:'jackolantern', name:"Jack-o'-Lantern", icon:'🎃', wear:"Jack-o'-Lantern", category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'valentinesticker', name:'Valentine Sticker', icon:'💝', wear:'Valentine Sticker', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'reversevalentine', name:'Reverse Valentine Sticker', icon:'💌', wear:'Reverse Valentine Sticker', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'easteregg', name:'Easter Egg / Bunny Egg', icon:'🥚', wear:'Easter Egg / Bunny Egg', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
+  { id:'easteregg', name:'Easter Egg / Bunny Egg', icon:'🥚', wear:'Easter Egg / Bunny Egg', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], current:true },
   { id:'ballornament', name:'Ball Ornament', icon:'🎄', wear:'Ball Ornament', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'mitten', name:'Mitten', icon:'🧤', wear:'Mitten', category:'Holiday', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   // Seasonal
@@ -450,7 +450,7 @@ const eventDecors = [
   { id:'lunarnewyearred', name:'Lunar New Year Ornament (Red)', icon:'🧧', wear:'Red Ornament', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'riocarnival', name:'Rio Carnival', icon:'🎭', wear:'Rio Carnival', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   { id:'colorpowder', name:'Color Powder', icon:'🎨', wear:'Color Powder', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
-  { id:'klompen', name:'Klompen Keychain', icon:'🪵', wear:'Klompen Keychain', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'] },
+  { id:'klompen', name:'Klompen Keychain', icon:'🪵', wear:'Klompen Keychain', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged','Ice'], current:true },
   { id:'mahjong', name:'Mahjong Tile', icon:'🀄', wear:'Mahjong Tile', category:'Cultural', variants:[], colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], mahjongSlots:true, tip:'27 tiles total: 2 Red · 4 Yellow · 4 Blue · 5 White · 4 Purple · 4 Rock · 4 Winged.' },
   { id:'calavera', name:'Calavera', icon:'💀', wear:'Calavera', category:'Cultural', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
   // New Year — newest first
@@ -1086,11 +1086,17 @@ function collectionContent(){
     return roadsideDecors.map(d=>renderAccordionItem(d)).join('');
   }
   if(collectionTab==='events'){
-    const cats=[...new Set(eventDecors.map(d=>d.category))];
-    return cats.map(cat=>
+    const current=eventDecors.filter(d=>d.current);
+    const rest=eventDecors.filter(d=>!d.current);
+    const currentHTML=current.length?
+      `<div class="event-category-label">📅 Current</div>`+current.map(d=>renderAccordionItem(d)).join(''):
+      '';
+    const cats=[...new Set(rest.map(d=>d.category))];
+    const pastHTML=cats.map(cat=>
       `<div class="event-category-label">${cat}</div>`+
-      eventDecors.filter(d=>d.category===cat).map(d=>renderAccordionItem(d)).join('')
+      rest.filter(d=>d.category===cat).map(d=>renderAccordionItem(d)).join('')
     ).join('');
+    return currentHTML+pastHTML;
   }
   // regular — all decors except roadside, with nav hints inserted
   const roadsideHint=`<div class="nav-hint" onclick="setCollectionTab('roadside')" style="cursor:pointer;">🪙 Roadside Pikmin &rarr; <span>see the Roadside tab</span></div>`;
