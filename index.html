@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rubik:wght@700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Inter', sans-serif; background: #c9e1bf; background-image: radial-gradient(ellipse at 25% 15%, #d6eccc 0%, transparent 55%), radial-gradient(ellipse at 78% 82%, #b2d19f 0%, transparent 55%); min-height: 100vh; color: #555555; }
+  body { font-family: 'Inter', sans-serif; overflow-x: hidden; background: #c9e1bf; background-image: radial-gradient(ellipse at 25% 15%, #d6eccc 0%, transparent 55%), radial-gradient(ellipse at 78% 82%, #b2d19f 0%, transparent 55%); min-height: 100vh; color: #555555; }
   .app { max-width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
   .header { padding: 20px 20px 12px; border-bottom: 1px solid rgba(0,0,0,0.07); background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 10; }
   .header-inner { max-width: 1200px; margin: 0 auto; }
@@ -22,6 +22,7 @@
   .auth-wrap { display:flex; align-items:center; gap:6px; margin-left:auto; opacity:0; transition:opacity 0.2s; }
   .auth-wrap.ready { opacity:1; }
   .save-progress-label { font-size:13px; color:#7a8c77; font-family:'Inter',sans-serif; white-space:nowrap; pointer-events:none; }
+  @media (max-width:400px) { .save-progress-label { display:none; } }
 
   #import-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); backdrop-filter:blur(4px); z-index:200; align-items:center; justify-content:center; padding:20px; }
   #import-modal.open { display:flex; }
