@@ -161,17 +161,27 @@
   .letter-grid { margin-top:0; padding-top:0; border-top:none; }
   .rare-badge { font-size:11px; background:#f2eafa; color:#826ab1; border-radius:4px; padding:1px 5px; margin-left:4px; font-weight:500; letter-spacing:0.3px; vertical-align:middle; }
   .done-badge { font-size:11px; background:#c8f0d4; color:#1a6e35; border-radius:4px; padding:1px 5px; margin-left:12px; font-weight:500; letter-spacing:0.3px; vertical-align:middle; }
-  .mark-all-row { display:flex; justify-content:flex-end; margin-top:19px; padding-top:10px; border-top:1px solid rgba(170,196,158,0.3); }
+  .mark-all-row { display:flex; justify-content:space-between; align-items:center; margin-top:19px; padding-top:10px; border-top:1px solid rgba(170,196,158,0.3); }
+  .slot-count { font-size:11px; color:#7a8c77; }
+  .tab-counts-row { display:none; }
   .coming-soon-msg { font-size:13px; color:#7a8c77; font-style:italic; padding:4px 0 2px; }
   .mahjong-cell { position:relative; border:none; background:transparent; padding:0; cursor:pointer; border-radius:4px; transition:transform 0.12s; }
   .mahjong-cell:hover { transform:scale(1.1); }
-  .mahjong-cell .tile-img { width:38px; height:auto; display:block; border-radius:4px; }
+  .mahjong-cell .tile-img { width:38px; height:auto; display:block; border-radius:4px; opacity:0.9; }
+  .mahjong-cell.collected .tile-img { opacity:1; }
   .mahjong-cell .chk-overlay { position:absolute; bottom:0; right:0; width:16px; height:16px; display:none; }
+  .flower-cell { position:relative; border:none; background:transparent; padding:0; cursor:pointer; border-radius:4px; transition:transform 0.12s; }
+  .flower-cell:hover { transform:scale(1.1); }
+  .flower-cell .tile-img { width:34px; height:auto; display:block; border-radius:4px; opacity:0.8; }
+  .flower-cell.collected .tile-img { opacity:1; }
+  .flower-cell .chk-overlay { position:absolute; bottom:0; right:0; width:16px; height:16px; display:none; }
+  .flower-cell.collected .chk-overlay { display:block; }
   .mahjong-cell.collected .chk-overlay { display:block; }
   .card-suit-section { margin-bottom:32px; }
   .card-suit-section:last-child { margin-bottom:0; }
   .card-suit-label { font-size:11px; font-weight:500; color:#5a6e57; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
   .card-grid { display:flex; flex-wrap:wrap; gap:14px; }
+  .flower-grid { display:flex; flex-wrap:wrap; gap:18px; }
   .card-cell { border:none; background:transparent; padding:0; cursor:pointer; border-radius:4px; transition:transform 0.12s; }
   .card-cell:hover { transform:scale(1.1); }
   .card-cell img { width:38px; height:auto; display:block; border-radius:4px; }
@@ -472,8 +482,8 @@ const eventDecors = [
   { id:'pacifier', name:'Pacifier', icon:'🍼', wear:'Pacifier', category:'Other', colors:['Red'] },
   { id:'playingcard', name:'Playing Card', icon:'🃏', wear:'Playing Card', category:'Other', variants:[], colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], cardSlots:true, tip:'27 cards total: 4 Red · 4 Yellow · 4 Blue · 3 White · 4 Purple · 4 Rock · 4 Winged.' },
   { id:'presentstickerGold', name:'Present Sticker (Gold)', icon:'🎁', wear:'Present Sticker (Gold)', category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'] },
-  { id:'flowercard1', name:'Flower Card (Volume 1)', icon:'🌸', wear:'Flower Card', variants:['January','February','March','April','May','June','July','August','September','October','November','December'], category:'Other', colors:['Red','Yellow','Blue','Purple'], comingSoon:true, tip:'Each month has a specific set of Pikmin colors. April & December each have 2 Red cards.' },
-  { id:'flowercard2', name:'Flower Card (Volume 2)', icon:'🌸', wear:'Flower Card', variants:['January','February','March','April','May','June','July','August','September','October','November','December'], category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], comingSoon:true },
+  { id:'flowercard1', name:'Flower Card (Volume 1)', icon:'🎴', wear:'Flower Card', variants:[], category:'Other', colors:['Red','Yellow','Blue','Purple'], flowerCard1:true, tip:'Each month has a specific set of Pikmin colors. April & December each have 2 Red cards.' },
+  { id:'flowercard2', name:'Flower Card (Volume 2)', icon:'🎴', wear:'Flower Card', variants:[], category:'Other', colors:['Red','Yellow','Blue','White','Purple','Rock','Winged'], flowerCard2:true },
   { id:'redrosette', name:'Red Rosette', icon:'🏵️', wear:'Red Ribbon', category:'Other', colors:['Red'] },
   { id:'yellowrosette', name:'Yellow Rosette', icon:'🏵️', wear:'Yellow & Green Ribbon', category:'Other', colors:['Yellow'] },
   { id:'photobuttonbadge', name:'Photo Button Badge', icon:'📸', wear:'Photo Button Badge', category:'Other', colors:['Red'] },
@@ -549,6 +559,20 @@ function stickerColorDone(d){
   d.stickerColors.forEach(sc=>d.pikminColors.forEach(pc=>{if(collected.has(slotKey(d.id,sc,pc)))n++;}));
   return n;
 }
+function flowerCard1Total(d){return d.flowerCard1?24:0;}
+function flowerCard1Done(d){
+  if(!d.flowerCard1)return 0;
+  let n=0;
+  for(let i=1;i<=24;i++){if(collected.has(slotKey(d.id,`fc1-${i}`,'card')))n++;}
+  return n;
+}
+function flowerCard2Total(d){return d.flowerCard2?16:0;}
+function flowerCard2Done(d){
+  if(!d.flowerCard2)return 0;
+  let n=0;
+  for(let i=1;i<=16;i++){if(collected.has(slotKey(d.id,`fc2-${i}`,'card')))n++;}
+  return n;
+}
 function mahjongSlotsTotal(d){return d.mahjongSlots?MAHJONG_SUITS.reduce((s,suit)=>s+suit.keys.length,0):0;}
 function mahjongSlotsDone(d){
   if(!d.mahjongSlots)return 0;
@@ -563,12 +587,12 @@ function cardSlotsDone(d){
   CARD_SUITS.forEach(suit=>suit.keys.forEach(k=>{if(collected.has(slotKey(d.id,k,'card')))n++;}));
   return n;
 }
-function totalSlots(d){if(d.comingSoon)return 0;const r=d.rareVariants?d.rareVariants.length*colorsFor(d).length:0;return baseSlots(d)+r+letterSlots(d)+stickerColorSlots(d)+cardSlotsTotal(d)+mahjongSlotsTotal(d);}
+function totalSlots(d){if(d.comingSoon)return 0;const r=d.rareVariants?d.rareVariants.length*colorsFor(d).length:0;return baseSlots(d)+r+letterSlots(d)+stickerColorSlots(d)+cardSlotsTotal(d)+mahjongSlotsTotal(d)+flowerCard1Total(d)+flowerCard2Total(d);}
 function doneSlots(d){
   let n=0;
   getVariants(d).forEach((v,vi)=>colorsFor(d,vi).forEach(c=>{if(collected.has(slotKey(d.id,vi,c)))n++;}));
   if(d.rareVariants)d.rareVariants.forEach((v,ri)=>colorsFor(d).forEach(c=>{if(collected.has(slotKey(d.id,`r${ri}`,c)))n++;}));
-  return n+letterDone(d)+stickerColorDone(d)+cardSlotsDone(d)+mahjongSlotsDone(d);
+  return n+letterDone(d)+stickerColorDone(d)+cardSlotsDone(d)+mahjongSlotsDone(d)+flowerCard1Done(d)+flowerCard2Done(d);
 }
 function isBaseComplete(d){return getVariants(d).every((v,vi)=>colorsFor(d,vi).every(c=>collected.has(slotKey(d.id,vi,c))));}
 function isDecorFullyCollected(d){return doneSlots(d)===totalSlots(d);}
@@ -1038,9 +1062,23 @@ function openMaps(name,lat,lng,named){const url=named==='true'?`https://www.goog
 function setCollectionTab(tab){collectionTab=tab;localStorage.setItem('pikgarden-subtab',tab);renderCollection();window.scrollTo({top:0});}
 function updateCollectionTabAttr(){const el=document.getElementById('collection');if(el)el.dataset.tab=collectionTab;}
 
+function tabCounts(){
+  const reg=decors.filter(d=>d.category!=='roadside');
+  const counts={
+    regular:[reg.reduce((s,d)=>s+doneSlots(d),0), reg.reduce((s,d)=>s+totalSlots(d),0)],
+    roadside:[roadsideDecors.reduce((s,d)=>s+doneSlots(d),0), roadsideDecors.reduce((s,d)=>s+totalSlots(d),0)],
+    events:[eventDecors.reduce((s,d)=>s+doneSlots(d),0), eventDecors.reduce((s,d)=>s+totalSlots(d),0)],
+  };
+  return counts;
+}
 function collectionSubTabs(){
+  const counts=tabCounts();
+  const labels={regular:'Regular',roadside:'Roadside',events:'Events'};
   return`<div class="sub-tabs">`+
     ['regular','roadside','events'].map(t=>`<button class="sub-tab${collectionTab===t?' active':''}" onclick="setCollectionTab('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')+
+    `</div>`+
+    `<div class="tab-counts-row">`+
+    ['regular','roadside','events'].map(t=>`<span class="tab-count${collectionTab===t?' active':''}">${counts[t][0]} / ${counts[t][1]}</span>`).join('')+
     `</div>`;
 }
 function collectionContent(){
@@ -1077,6 +1115,30 @@ function renderDesktopCollection(){
   document.getElementById('desktop-collection').innerHTML=
     collectionSubTabs()+
     (isSingle?`<div style="max-width:calc(55% - 4px);margin:0 auto;">${content}</div>`:`<div class="collection-accordion-grid">${content}</div>`);
+}
+function renderFlowerCard2Grid(d){
+  const keys=Array.from({length:16},(_,i)=>`fc2-${i+1}`);
+  return`<div class="flower-grid">`+
+    keys.map(k=>{
+      const isC=collected.has(slotKey(d.id,k,'card'));
+      return`<button class="flower-cell${isC?' collected':''}" onclick="toggleSlot('${d.id}','${k}','card')" title="${k}">`+
+        `<img class="tile-img" src="images/${k}.png" alt="${k}">`+
+        `<img class="chk-overlay" src="images/checked.png" alt="✓">`+
+        `</button>`;
+    }).join('')+
+    `</div>`;
+}
+function renderFlowerCard1Grid(d){
+  const keys=Array.from({length:24},(_,i)=>`fc1-${i+1}`);
+  return`<div class="flower-grid">`+
+    keys.map(k=>{
+      const isC=collected.has(slotKey(d.id,k,'card'));
+      return`<button class="flower-cell${isC?' collected':''}" onclick="toggleSlot('${d.id}','${k}','card')" title="${k}">`+
+        `<img class="tile-img" src="images/${k}.png" alt="${k}">`+
+        `<img class="chk-overlay" src="images/checked.png" alt="✓">`+
+        `</button>`;
+    }).join('')+
+    `</div>`;
 }
 function renderMahjongGrid(d){
   return MAHJONG_SUITS.map(suit=>
@@ -1179,7 +1241,7 @@ function renderAccordionItem(d){
     (full?`<span class="done-badge" style="flex-shrink:0">ALL DONE</span>`:'')+
     (partial?`<div class="acc-progress-bar"><div class="acc-progress-bar-fill" style="width:${Math.round(done/total*100)}%"></div></div>`:'')+
     `<span class="acc-arrow">▾</span></button>`+
-    `<div class="accordion-body${isOpen?' open':''}"><div class="accordion-body-inner"><div class="accordion-body-inner-pad">${baseHTML}${rareHTML}${d.mahjongSlots?renderMahjongGrid(d):''}${d.cardSlots?renderCardGrid(d):''}${d.stickerColors?renderStickerColorsGrid(d):''}${d.letterColors?renderLetterGrid(d):''}${!full?`<div class="mark-all-row"><button class="mark-all-btn" onclick="markAllCollected('${d.id}')">Mark all collected</button></div>`:''}</div></div></div>`+
+    `<div class="accordion-body${isOpen?' open':''}"><div class="accordion-body-inner"><div class="accordion-body-inner-pad">${baseHTML}${rareHTML}${d.flowerCard1?renderFlowerCard1Grid(d):''}${d.flowerCard2?renderFlowerCard2Grid(d):''}${d.mahjongSlots?renderMahjongGrid(d):''}${d.cardSlots?renderCardGrid(d):''}${d.stickerColors?renderStickerColorsGrid(d):''}${d.letterColors?renderLetterGrid(d):''}${!full?`<div class="mark-all-row"><span class="slot-count">${done} / ${total}</span><button class="mark-all-btn" onclick="markAllCollected('${d.id}')">Mark all collected</button></div>`:''}</div></div></div>`+
     `</div>`;
 }
 function toggleAccordion(id){
@@ -1285,6 +1347,8 @@ function markAllCollected(id){
   const toAdd=[];
   getVariants(d).forEach((v,vi)=>colorsFor(d,vi).forEach(c=>{const k=slotKey(id,vi,c);if(!collected.has(k))toAdd.push(k);}));
   if(d.rareVariants)d.rareVariants.forEach((v,ri)=>colorsFor(d).forEach(c=>{const k=slotKey(id,`r${ri}`,c);if(!collected.has(k))toAdd.push(k);}));
+  if(d.flowerCard1)for(let i=1;i<=24;i++){const sk=slotKey(id,`fc1-${i}`,'card');if(!collected.has(sk))toAdd.push(sk);}
+  if(d.flowerCard2)for(let i=1;i<=16;i++){const sk=slotKey(id,`fc2-${i}`,'card');if(!collected.has(sk))toAdd.push(sk);}
   if(d.mahjongSlots)MAHJONG_SUITS.forEach(suit=>suit.keys.forEach(k=>{const sk=slotKey(id,k,'tile');if(!collected.has(sk))toAdd.push(sk);}));
   if(d.cardSlots)CARD_SUITS.forEach(suit=>suit.keys.forEach(k=>{const sk=slotKey(id,k,'card');if(!collected.has(sk))toAdd.push(sk);}));
   if(d.stickerColors)d.stickerColors.forEach(sc=>d.pikminColors.forEach(pc=>{const k=slotKey(id,sc,pc);if(!collected.has(k))toAdd.push(k);}));
