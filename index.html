@@ -19,7 +19,8 @@
   .auth-btn:hover { background:#e8e8e8; }
   .auth-btn .g-icon { display:flex; align-items:center; justify-content:center; }
   .auth-avatar { width:28px; height:28px; border-radius:50%; display:block; object-fit:cover; }
-  .auth-wrap { display:flex; align-items:center; gap:6px; margin-left:auto; }
+  .auth-wrap { display:flex; align-items:center; gap:6px; margin-left:auto; opacity:0; transition:opacity 0.2s; }
+  .auth-wrap.ready { opacity:1; }
   .save-progress-label { font-size:13px; color:#7a8c77; font-family:'Inter',sans-serif; white-space:nowrap; pointer-events:none; }
 
   #import-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); backdrop-filter:blur(4px); z-index:200; align-items:center; justify-content:center; padding:20px; }
@@ -1565,6 +1566,7 @@ function updateAuthUI(user) {
     const label = document.getElementById('save-progress-label');
     if (label) label.style.display = '';
   }
+  document.getElementById('auth-wrap').classList.add('ready');
 }
 </script>
 <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
