@@ -10,11 +10,18 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Inter', sans-serif; background: #c9e1bf; background-image: radial-gradient(ellipse at 25% 15%, #d6eccc 0%, transparent 55%), radial-gradient(ellipse at 78% 82%, #b2d19f 0%, transparent 55%); min-height: 100vh; color: #555555; }
   .app { max-width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
-  .header { padding: 16px 20px 12px; border-bottom: 1px solid rgba(0,0,0,0.07); background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 10; }
+  .header { padding: 20px 20px 12px; border-bottom: 1px solid rgba(0,0,0,0.07); background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 10; }
   .header-inner { max-width: 1200px; margin: 0 auto; }
   .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
   .share-btn { font-size:12px; font-weight:500; color:#5a6e57; background:rgba(255,255,255,0.7); border:1px solid rgba(0,0,0,0.09); border-radius:8px; padding:5px 10px; cursor:pointer; font-family:'Inter',sans-serif; transition:all 0.15s; white-space:nowrap; }
   .share-btn:hover { background:#fff; color:#2d5a1b; }
+  .auth-btn { display:flex; align-items:center; gap:8px; margin-left:auto; background:#f2f2f2; border:none; border-radius:99px; height:36px; padding:0 10px 1px 8px; cursor:pointer; transition:background 0.15s; flex-shrink:0; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:#3c4043; white-space:nowrap; }
+  .auth-btn:hover { background:#e8e8e8; }
+  .auth-btn .g-icon { display:flex; align-items:center; justify-content:center; }
+  .auth-avatar { width:28px; height:28px; border-radius:50%; display:block; object-fit:cover; }
+  .auth-wrap { display:flex; align-items:center; gap:6px; margin-left:auto; }
+  .save-progress-label { font-size:13px; color:#7a8c77; font-family:'Inter',sans-serif; white-space:nowrap; pointer-events:none; }
+
   #import-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); backdrop-filter:blur(4px); z-index:200; align-items:center; justify-content:center; padding:20px; }
   #import-modal.open { display:flex; }
   .import-card { background:#fff; border-radius:16px; padding:24px; width:100%; max-width:420px; box-shadow:0 8px 40px rgba(0,0,0,0.18); }
@@ -261,6 +268,12 @@
           <img src="images/App Icon.png" width="40" height="40" style="border-radius:9px;display:block;" alt="Pikgarden">
           <span class="app-title"><span style="animation-delay:0s;--lift:-8px">P</span><span style="animation-delay:0.15s;--lift:-13px">I</span><span style="animation-delay:0.3s;--lift:-7px">K</span><span style="animation-delay:0.45s;--lift:-14px">G</span><span style="animation-delay:0.6s;--lift:-9px">A</span><span style="animation-delay:0.75s;--lift:-12px">R</span><span style="animation-delay:0.9s;--lift:-6px">D</span><span style="animation-delay:1.05s;--lift:-11px">E</span><span style="animation-delay:1.2s;--lift:-10px">N</span></span>
         </a>
+        <div class="auth-wrap" id="auth-wrap">
+          <span id="save-progress-label" class="save-progress-label">Save Progress</span>
+          <button id="auth-btn" class="auth-btn" title="Sign in to save your progress">
+            <span class="g-icon"><svg width="20" height="20" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.169 6.656 3.58 9 3.58z" fill="#EA4335"/></svg></span>Sign in
+          </button>
+        </div>
       </div>
       <div class="tabs">
         <button class="tab active" onclick="showTab('collection',this)">Garden Tracker</button>
@@ -620,7 +633,12 @@ let selectedId = null;
 let isReturning = localStorage.getItem('pikgarden-returning')==='true';
 
 // ─── UTILS ───────────────────────────────────────────────────────────────────
-function saveCollected(){localStorage.setItem('pikgarden-collected',JSON.stringify([...collected]));localStorage.setItem('pikgarden-returning','true');isReturning=true;}
+function saveCollected(){
+  localStorage.setItem('pikgarden-collected',JSON.stringify([...collected]));
+  localStorage.setItem('pikgarden-returning','true');
+  isReturning=true;
+  if(window.pgFirestoreSave && window.currentUser) window.pgFirestoreSave(window.currentUser.uid,[...collected]);
+}
 function haversine(lat1,lng1,lat2,lng2){const R=3958.8,dL=(lat2-lat1)*Math.PI/180,dG=(lng2-lng1)*Math.PI/180,a=Math.sin(dL/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 function useMiles(){
   if(!userCoords)return false;
@@ -1361,14 +1379,16 @@ function markAllCollected(id){
   if(d.letterColors)'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>d.letterColors.forEach(c=>{const k=slotKey(id,`sticker-${l}`,c);if(!collected.has(k))toAdd.push(k);}));
   if(!toAdd.length)return;
   markAllUndoBuffer={id,keys:toAdd};
-  toAdd.forEach(k=>{collected.add(k);localStorage.setItem(k,'1');});
+  toAdd.forEach(k=>{collected.add(k);});
+  saveCollected();
   launchFireworks();
   renderCollection();
   showToast('All marked as collected!','undoMarkAll()');
 }
 function undoMarkAll(){
   if(!markAllUndoBuffer)return;
-  markAllUndoBuffer.keys.forEach(k=>{collected.delete(k);localStorage.removeItem(k);});
+  markAllUndoBuffer.keys.forEach(k=>{collected.delete(k);});
+  saveCollected();
   markAllUndoBuffer=null;
   renderCollection();
   showToast('Undone.');
@@ -1430,6 +1450,15 @@ window.addEventListener('scroll',()=>{
   const btn=document.getElementById('back-to-top');
   if(btn)btn.classList.toggle('visible',window.scrollY>200);
 });
+// Firebase hooks — used by the module script below
+window.pgGetCollected = () => [...collected];
+window.pgSetCollected = (keys) => {
+  collected = new Set(keys);
+  localStorage.setItem('pikgarden-collected',JSON.stringify([...collected]));
+  localStorage.setItem('pikgarden-returning','true');
+  isReturning=true;
+  renderAll(); renderCollection();
+};
 </script>
 <div id="import-modal" onclick="if(event.target===this)closeImportModal()">
   <div class="import-card">
@@ -1444,6 +1473,100 @@ window.addEventListener('scroll',()=>{
   </div>
 </div>
 <div id="toast" style="position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(255,255,255,0.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,0.7);border-radius:99px;padding:10px 20px;font-size:13px;color:#444;font-weight:500;box-shadow:0 8px 32px rgba(45,90,27,0.12);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.25s,transform 0.25s;z-index:300;"></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCb_HoXE0qT0-u6LfFVk2Ne_upIddGtRuY",
+  authDomain: "pikgarden.firebaseapp.com",
+  projectId: "pikgarden",
+  storageBucket: "pikgarden.firebasestorage.app",
+  messagingSenderId: "285937428825",
+  appId: "1:285937428825:web:142e89cf84116279370448"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+window.signInWithGoogle = async () => {
+  try { await signInWithPopup(auth, provider); }
+  catch(e) { console.error('Sign in error', e); }
+};
+window.signOutUser = async () => { await signOut(auth); };
+
+let saveTimer = null;
+window.pgFirestoreSave = (uid, keys) => {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try { await setDoc(doc(db,'users',uid), { collected: keys }); }
+    catch(e) { console.error('Firestore save error', e); }
+  }, 1000);
+};
+
+let prevUser = null;
+onAuthStateChanged(auth, async (user) => {
+  window.currentUser = user || null;
+  updateAuthUI(user);
+  if (user) {
+    try {
+      const snap = await getDoc(doc(db,'users',user.uid));
+      const name = user.displayName ? user.displayName.split(' ')[0] : 'trainer';
+      // Always read local from localStorage directly — most reliable source
+      const localKeys = JSON.parse(localStorage.getItem('pikgarden-collected') || '[]');
+      if (snap.exists()) {
+        // Merge cloud + local so offline progress is never lost
+        const cloudKeys = snap.data().collected || [];
+        const merged = [...new Set([...cloudKeys, ...localKeys])];
+        window.pgSetCollected(merged);
+        if (merged.length > cloudKeys.length) {
+          await setDoc(doc(db,'users',user.uid), { collected: merged });
+        }
+        window.showToast(`Welcome back, ${name}! ☁️`);
+      } else {
+        // First sign-in — upload local data to cloud
+        await setDoc(doc(db,'users',user.uid), { collected: localKeys });
+        window.pgSetCollected(localKeys);
+        console.log('[PikGarden] First sign-in: uploaded', localKeys.length, 'keys');
+        window.showToast(localKeys.length > 0
+          ? `Progress saved to your account! ☁️`
+          : `Signed in! Your progress will sync automatically. ☁️`);
+      }
+    } catch(e) { console.error('Firestore load error', e); }
+  } else if (prevUser) {
+    // Just signed out — reload localStorage
+    const local = JSON.parse(localStorage.getItem('pikgarden-collected') || '[]');
+    window.pgSetCollected(local);
+    window.showToast('Signed out.');
+  }
+  prevUser = user;
+});
+
+function updateAuthUI(user) {
+  const btn = document.getElementById('auth-btn');
+  if (!btn) return;
+  if (user) {
+    const name = user.displayName ? user.displayName.split(' ')[0] : 'Account';
+    const photo = user.photoURL;
+    btn.innerHTML = photo
+      ? `<img class="auth-avatar" src="${photo}" alt="${name}">Sign out`
+      : `<span class="g-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#e0e0e0"/><circle cx="12" cy="9" r="4" fill="#9e9e9e"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" fill="#9e9e9e"/></svg></span>Sign out`;
+    btn.title = `Signed in as ${name} — click to sign out`;
+    btn.onclick = () => window.signOutUser();
+    const label = document.getElementById('save-progress-label');
+    if (label) label.style.display = 'none';
+  } else {
+    btn.innerHTML = `<span class="g-icon"><svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.169 6.656 3.58 9 3.58z" fill="#EA4335"/></svg></span>Sign in`;
+    btn.title = 'Sign in to save your progress';
+    btn.onclick = () => window.signInWithGoogle();
+    const label = document.getElementById('save-progress-label');
+    if (label) label.style.display = '';
+  }
+}
+</script>
 <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
 </body>
 </html>
