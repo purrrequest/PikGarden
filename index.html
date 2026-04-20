@@ -335,7 +335,8 @@
         <div class="tape-strip" style="background:rgba(108,202,120,0.40);top:18px;transform:rotate(0.5deg);"></div>
       </div>
       <div id="device-sync-section" style="padding:20px 0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px;">
-        <span style="font-size:14px;color:#7a8c77;">Switching devices?<br>Sign in to sync your collection automatically across devices.</span>
+        <span style="font-size:14px;color:#7a8c77;">Switching devices?</span>
+        <span style="font-size:14px;color:#7a8c77;">Sign in to sync your collection automatically across devices.</span>
         <button onclick="window.signInWithGoogle()" class="auth-btn" style="margin:0 auto;height:44px;padding:0 24px 0 16px;font-size:15px;">
           <span class="g-icon"><svg width="22" height="22" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.169 6.656 3.58 9 3.58z" fill="#EA4335"/></svg></span>Sign in with Google
         </button>
@@ -419,7 +420,16 @@ const decors = [
   { id:'hotel', name:'Hotel', icon:'🏨', wear:'Hotel amenities', tags:['tourism=hotel'], tip:'Any hotel works — from small guesthouses to large chains.' },
   { id:'makeupstore', name:'Makeup Store', icon:'💄', wear:'Makeup', tags:['shop=department_store','shop=cosmetics','amenity=pharmacy'], tip:'Dedicated cosmetics stores work best. Department store beauty counters may not always count.' },
   { id:'shrinestemples', name:'Shrines and Temples', icon:'⛩️', wear:'Fortune', variants:['Fortune (Very Lucky)','Fortune (Lucky)','Fortune (Pretty Lucky)','Fortune (A Little Lucky)','Fortune (Future Luck)'], exclusive:'Japan', locations:[], tags:['amenity=place_of_worship'], tip:'⚠️ Japan exclusive. Only available near shrines and temples in Japan — not accessible in other countries.' },
-  { id:'appliancesstore', name:'Appliances Store', icon:'🔌', wear:'Battery / Fairy Lights', variants:['D Battery (Red-Yellow)','D Battery (Silver-Blue)','D Battery (Green-Silver)','AAA Battery (Red-Yellow)','AAA Battery (Silver-Blue)','AAA Battery (Green-Silver)','Light Bulb','Colorful String Lights'], tags:['shop=appliance','shop=computer','shop=electronics'], tip:'Large electronics and appliance stores work reliably. Not all home goods stores count.' },
+  { id:'appliancesstore', name:'Appliances Store', icon:'🔌', wear:'Battery / Fairy Lights', variants:[], variantImages:[
+    {key:'d-red',   label:'D Battery (Red)',   img:'images/D-cell red.png'},
+    {key:'d-blue',  label:'D Battery (Blue)',  img:'images/D-cell blue.png'},
+    {key:'d-green', label:'D Battery (Green)', img:'images/D-cell green.png'},
+    {key:'aaa-red',   label:'AAA Battery (Red)',   img:'images/AAA red.png'},
+    {key:'aaa-blue',  label:'AAA Battery (Blue)',  img:'images/AAA blue.png'},
+    {key:'aaa-green', label:'AAA Battery (Green)', img:'images/AAA green.png'},
+    {key:'bulb',   label:'Light Bulb',             img:'images/light bulb2.png'},
+    {key:'lights', label:'Colorful String Lights', img:'images/xmas light.png'},
+  ], tags:['shop=appliance','shop=computer','shop=electronics'], tip:'Large electronics and appliance stores work reliably. Not all home goods stores count.' },
   { id:'curryrestaurant', name:'Curry Restaurant', icon:'🍛', wear:'Curry bowl', tags:['cuisine=curry','cuisine=indian','cuisine=sri_lankan','cuisine=nepalese'], tip:'Indian, Thai, and other curry-focused restaurants all qualify.' },
   { id:'diystore', name:'DIY Store', icon:'🔧', wear:'Tool', tags:['shop=doityourself','shop=hardware'], tip:'Large hardware or home improvement stores work best. Small local hardware shops may not always qualify.' },
   { id:'university', name:'University', icon:'🎓', wear:'College crest patch', tags:['amenity=university','amenity=college','building=university'], tip:'Must be on a university or college campus.' },
@@ -609,12 +619,17 @@ function cardSlotsDone(d){
   CARD_SUITS.forEach(suit=>suit.keys.forEach(k=>{if(collected.has(slotKey(d.id,k,'card')))n++;}));
   return n;
 }
-function totalSlots(d){if(d.comingSoon)return 0;const r=d.rareVariants?d.rareVariants.length*colorsFor(d).length:0;return baseSlots(d)+r+letterSlots(d)+stickerColorSlots(d)+cardSlotsTotal(d)+mahjongSlotsTotal(d)+flowerCard1Total(d)+flowerCard2Total(d);}
+function variantImagesTotal(d){return d.variantImages?d.variantImages.length:0;}
+function variantImagesDone(d){
+  if(!d.variantImages)return 0;
+  return d.variantImages.filter(v=>collected.has(slotKey(d.id,'vi',v.key))).length;
+}
+function totalSlots(d){if(d.comingSoon)return 0;const r=d.rareVariants?d.rareVariants.length*colorsFor(d).length:0;return baseSlots(d)+r+letterSlots(d)+stickerColorSlots(d)+cardSlotsTotal(d)+mahjongSlotsTotal(d)+flowerCard1Total(d)+flowerCard2Total(d)+variantImagesTotal(d);}
 function doneSlots(d){
   let n=0;
   getVariants(d).forEach((v,vi)=>colorsFor(d,vi).forEach(c=>{if(collected.has(slotKey(d.id,vi,c)))n++;}));
   if(d.rareVariants)d.rareVariants.forEach((v,ri)=>colorsFor(d).forEach(c=>{if(collected.has(slotKey(d.id,`r${ri}`,c)))n++;}));
-  return n+letterDone(d)+stickerColorDone(d)+cardSlotsDone(d)+mahjongSlotsDone(d)+flowerCard1Done(d)+flowerCard2Done(d);
+  return n+letterDone(d)+stickerColorDone(d)+cardSlotsDone(d)+mahjongSlotsDone(d)+flowerCard1Done(d)+flowerCard2Done(d)+variantImagesDone(d);
 }
 function isBaseComplete(d){return getVariants(d).every((v,vi)=>colorsFor(d,vi).every(c=>collected.has(slotKey(d.id,vi,c))));}
 function isDecorFullyCollected(d){return doneSlots(d)===totalSlots(d);}
@@ -1188,6 +1203,17 @@ function renderMahjongGrid(d){
     `</div></div>`
   ).join('');
 }
+function renderVariantImageGrid(d){
+  return`<div class="color-grid" style="flex-wrap:wrap;gap:14px;">`+
+    d.variantImages.map(v=>{
+      const isC=collected.has(slotKey(d.id,'vi',v.key));
+      return`<button class="mahjong-cell${isC?' collected':''}" onclick="toggleSlot('${d.id}','vi','${v.key}')" title="${v.label}">`+
+        `<img class="tile-img" src="${v.img}" alt="${v.label}" style="width:48px;height:auto;">`+
+        `<img class="chk-overlay" src="images/checked.png" alt="✓">`+
+        `</button>`;
+    }).join('')+
+    `</div>`;
+}
 function renderCardGrid(d){
   return CARD_SUITS.map(suit=>
     `<div class="card-suit-section">`+
@@ -1274,7 +1300,7 @@ function renderAccordionItem(d){
     (full?`<span class="done-badge" style="flex-shrink:0">ALL DONE</span>`:'')+
     (partial?`<div class="acc-progress-bar"><div class="acc-progress-bar-fill" style="width:${Math.round(done/total*100)}%"></div></div>`:'')+
     `<span class="acc-arrow">▾</span></button>`+
-    `<div class="accordion-body${isOpen?' open':''}"><div class="accordion-body-inner"><div class="accordion-body-inner-pad">${baseHTML}${rareHTML}${d.flowerCard1?renderFlowerCard1Grid(d):''}${d.flowerCard2?renderFlowerCard2Grid(d):''}${d.mahjongSlots?renderMahjongGrid(d):''}${d.cardSlots?renderCardGrid(d):''}${d.stickerColors?renderStickerColorsGrid(d):''}${d.letterColors?renderLetterGrid(d):''}${!full?`<div class="mark-all-row"><span class="slot-count">${done} / ${total}</span><button class="mark-all-btn" onclick="markAllCollected('${d.id}')">Mark all collected</button></div>`:''}</div></div></div>`+
+    `<div class="accordion-body${isOpen?' open':''}"><div class="accordion-body-inner"><div class="accordion-body-inner-pad">${baseHTML}${rareHTML}${d.flowerCard1?renderFlowerCard1Grid(d):''}${d.flowerCard2?renderFlowerCard2Grid(d):''}${d.mahjongSlots?renderMahjongGrid(d):''}${d.cardSlots?renderCardGrid(d):''}${d.variantImages?renderVariantImageGrid(d):''}${d.stickerColors?renderStickerColorsGrid(d):''}${d.letterColors?renderLetterGrid(d):''}${!full?`<div class="mark-all-row"><span class="slot-count">${done} / ${total}</span><button class="mark-all-btn" onclick="markAllCollected('${d.id}')">Mark all collected</button></div>`:''}</div></div></div>`+
     `</div>`;
 }
 function toggleAccordion(id){
@@ -1384,6 +1410,7 @@ function markAllCollected(id){
   if(d.flowerCard2)for(let i=1;i<=16;i++){const sk=slotKey(id,`fc2-${i}`,'card');if(!collected.has(sk))toAdd.push(sk);}
   if(d.mahjongSlots)MAHJONG_SUITS.forEach(suit=>suit.keys.forEach(k=>{const sk=slotKey(id,k,'tile');if(!collected.has(sk))toAdd.push(sk);}));
   if(d.cardSlots)CARD_SUITS.forEach(suit=>suit.keys.forEach(k=>{const sk=slotKey(id,k,'card');if(!collected.has(sk))toAdd.push(sk);}));
+  if(d.variantImages)d.variantImages.forEach(v=>{const sk=slotKey(id,'vi',v.key);if(!collected.has(sk))toAdd.push(sk);});
   if(d.stickerColors)d.stickerColors.forEach(sc=>d.pikminColors.forEach(pc=>{const k=slotKey(id,sc,pc);if(!collected.has(k))toAdd.push(k);}));
   if(d.letterColors)'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>d.letterColors.forEach(c=>{const k=slotKey(id,`sticker-${l}`,c);if(!collected.has(k))toAdd.push(k);}));
   if(!toAdd.length)return;
