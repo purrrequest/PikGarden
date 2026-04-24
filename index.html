@@ -1561,6 +1561,7 @@ onAuthStateChanged(auth, async (user) => {
   window.currentUser = user || null;
   updateAuthUI(user);
   if (user) {
+    if (!prevUser) gtag('event', 'login', { method: 'Google' });
     try {
       const snap = await getDoc(doc(db,'users',user.uid));
       const name = user.displayName ? user.displayName.split(' ')[0] : 'trainer';
